@@ -9,7 +9,6 @@
 ## value_label table
 ## My goal: Do everything in R, except the writing.
 ## writing can go to either xml or binary.
-
 library(XML)
 
 STATA.TIMESTAMP.FMT <- "%d %b %Y %H:%M"
@@ -19,13 +18,17 @@ STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>'
 
 .convertUnderscores <- function(x) gsub(x, "_", ".")
 
-.stataMissingType <- function(x) {
+.stataMissingType <- function(x, na.rm=TRUE) {
     ## if not a missing value then NA is returned
     ## if a missing value, then index of c(".", ..., ".z") returned.
     ## I subtract 1 to get 0-26, and the NAs remain NAs
     missings <- paste(".", c("", letters), sep="")
     ## I return a factor so that it is easier to interpret than 0-26
-    factor(match(x, missings) - 1, labels=missings)
+    ret <- match(x, missings) - 1
+    if (na.rm) {
+       ret <- ret[ ! is.na(ret) ]
+    }
+    factor(ret, labels=missings)
 }
 
 stataConvertFactors <- function(dataframe, convert.factors) {
@@ -55,7 +58,7 @@ stataConvertFactors <- function(dataframe, convert.factors) {
 read.stataXml <- function(file,
                           convert.factors=TRUE,
                           convert.underscore=FALSE,
-                          missing.type=FALSE)
+                          missing.type=TRUE)
 {
     doc <- xmlParse(file)
 
@@ -139,10 +142,10 @@ read.stataXml <- function(file,
 
         ## Missing values
         if (vartype != "character") {
-            ## Store the types of missing values
-            ## TODO: these should be sparse vectors
+            ## Keep track of the types of missing values
             if (missing.type) {
-                missingValues[[ x ]] <- .stataMissingType(var)
+                ## Only keep values for the missing variables to conserve memory
+                missingValues[[ x ]] <- .stataMissingTypes(var)
             }
 
             ## replace missings with "". they will be converted to NA by "as"
@@ -368,7 +371,6 @@ write.stataXml <- function(dataframe, file,
                       attr=list(name=charname, vname=vname))
         }
     }
-    ## Add char here
     z$closeTag()
 
     ## Data
