@@ -11,6 +11,36 @@
 ## writing can go to either xml or binary.
 library(XML)
 
+## From stata 10
+## help limits
+STATA.LIMITS <- list(## dataset sizes
+                     nobs = c(small=1000, IC=2147483647, SE=2147483647),
+                     varnum = c(small=99, IC=2047, SE=32767),  # number of variables
+                     datawidth= c(small=200, IC=24564, SE=393192)  # width of a dataset
+                     ## labels
+                     labeldata = 80  # dataset label
+                     labelvar = 80   # variable label
+                     labelvalstr = 32000 # length of value label string
+                     labelvalname = 32 # length of name of value label
+                     labelvalcodings = c(small=1000, IC=65536, SE=65536)
+                                        # number of codings within one value label
+                     ## Misc
+                     strvar = 244    # length of string variable
+                     varname = 32    # Length of variable name
+                     char = 67784    # length of one characteristic
+                     )
+
+## help data_types
+STATA.DATATYPES <- list(## number of bytes, min, max
+                        byte=c(1, -127, 100),
+                        int=c(2, -32767, 32740),
+                        long=c(4, -2147483647, 2147483620),
+                        ## bytes, min, max, 10^-x (negative power of ten for closes to 0 without being 0)
+                        float=c(4, -1.70141173319e+38, 1.70141173319e+38, 38),
+                        double=c(8, -8.9884656743e+307, 8.9884656743e+307, 323),
+                        ## min, max number of bytes
+                        str=c(1,244))
+
 STATA.TIMESTAMP.FMT <- "%d %b %Y %H:%M"
 STATA.FILETYPE <- 1
 STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>'
