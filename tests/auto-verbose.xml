@@ -1,0 +1,1184 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>
+<!DOCTYPE dta [
+	<!ELEMENT dta (header, descriptors,
+		variable_labels, expansion,
+		data, value_labels)>
+	<!ELEMENT header (ds_format, byteorder,
+		filetype, nvar, nobs, data_label,
+		time_stamp)>
+	<!ELEMENT ds_format (#PCDATA)>
+	<!ELEMENT byteorder (#PCDATA)>
+	<!ELEMENT filetype (#PCDATA)>
+	<!ELEMENT nvar (#PCDATA)>
+	<!ELEMENT nobs (#PCDATA)>
+	<!ELEMENT data_label (#PCDATA)>
+	<!ELEMENT time_stamp (#PCDATA)>
+	<!ELEMENT descriptors (typelist, varlist,
+		srtlist, fmtlist, lbllist)>
+	<!ELEMENT typelist (type)+>
+	<!ELEMENT type (#PCDATA)>
+	<!ATTLIST type varname IDREF #REQUIRED>
+	<!ELEMENT varlist (variable)+>
+	<!ELEMENT variable EMPTY>
+	<!ATTLIST variable varname ID #REQUIRED>
+	<!ELEMENT srtlist (sort)*>
+	<!ELEMENT sort EMPTY>
+	<!ATTLIST sort varname IDREF #REQUIRED>
+	<!ELEMENT fmtlist (fmt)+>
+	<!ELEMENT fmt (#PCDATA)>
+	<!ATTLIST fmt varname IDREF #REQUIRED>
+	<!ELEMENT lbllist (lblname)*>
+	<!ELEMENT lblname (#PCDATA)>
+	<!ATTLIST lblname varname IDREF #REQUIRED>
+	<!ELEMENT variable_labels (vlabel)*>
+	<!ELEMENT vlabel (#PCDATA)>
+	<!ATTLIST vlabel varname IDREF #REQUIRED>
+	<!ELEMENT expansion (char)*>
+	<!ELEMENT char (#PCDATA)>
+	<!ATTLIST char name  NMTOKEN #REQUIRED>
+	<!ATTLIST char vname NMTOKEN #REQUIRED>
+	<!ELEMENT data (o)*>
+	<!ELEMENT o (v)*>
+	<!ATTLIST o num NMTOKEN #IMPLIED>
+	<!ELEMENT v (#PCDATA)*>
+	<!ATTLIST v varname IDREF #IMPLIED>
+	<!ELEMENT value_labels (vallab)*>
+	<!ELEMENT vallab (label)+>
+	<!ATTLIST vallab name  NMTOKEN #REQUIRED>
+	<!ELEMENT label (#PCDATA)>
+	<!ATTLIST label value NMTOKEN #REQUIRED>
+]>
+<dta>
+	<header>
+		<ds_format>113</ds_format>
+		<byteorder>LOHI</byteorder>
+		<filetype>1</filetype>
+		<nvar>12</nvar>
+		<nobs>74</nobs>
+		<data_label>1978 Automobile Data</data_label>
+		<time_stamp>1 Dec 2009 14:14</time_stamp>
+	</header>
+	<descriptors>
+		<typelist>
+			<type varname='make'>str18</type>
+			<type varname='price'>int</type>
+			<type varname='mpg'>int</type>
+			<type varname='rep78'>int</type>
+			<type varname='headroom'>float</type>
+			<type varname='trunk'>int</type>
+			<type varname='weight'>int</type>
+			<type varname='length'>int</type>
+			<type varname='turn'>int</type>
+			<type varname='displacement'>int</type>
+			<type varname='gear_ratio'>float</type>
+			<type varname='foreign'>byte</type>
+		</typelist>
+		<varlist>
+			<variable varname='make'/>
+			<variable varname='price'/>
+			<variable varname='mpg'/>
+			<variable varname='rep78'/>
+			<variable varname='headroom'/>
+			<variable varname='trunk'/>
+			<variable varname='weight'/>
+			<variable varname='length'/>
+			<variable varname='turn'/>
+			<variable varname='displacement'/>
+			<variable varname='gear_ratio'/>
+			<variable varname='foreign'/>
+		</varlist>
+		<srtlist>
+			<sort varname='foreign'/>
+		</srtlist>
+		<fmtlist>
+			<fmt varname='make'>%-18s</fmt>
+			<fmt varname='price'>%8.0gc</fmt>
+			<fmt varname='mpg'>%8.0g</fmt>
+			<fmt varname='rep78'>%8.0g</fmt>
+			<fmt varname='headroom'>%6.1f</fmt>
+			<fmt varname='trunk'>%8.0g</fmt>
+			<fmt varname='weight'>%8.0gc</fmt>
+			<fmt varname='length'>%8.0g</fmt>
+			<fmt varname='turn'>%8.0g</fmt>
+			<fmt varname='displacement'>%8.0g</fmt>
+			<fmt varname='gear_ratio'>%6.2f</fmt>
+			<fmt varname='foreign'>%8.0g</fmt>
+		</fmtlist>
+		<lbllist>
+			<lblname varname='make'></lblname>
+			<lblname varname='price'></lblname>
+			<lblname varname='mpg'></lblname>
+			<lblname varname='rep78'></lblname>
+			<lblname varname='headroom'></lblname>
+			<lblname varname='trunk'></lblname>
+			<lblname varname='weight'></lblname>
+			<lblname varname='length'></lblname>
+			<lblname varname='turn'></lblname>
+			<lblname varname='displacement'></lblname>
+			<lblname varname='gear_ratio'></lblname>
+			<lblname varname='foreign'>origin</lblname>
+		</lbllist>
+	</descriptors>
+	<variable_labels>
+		<vlabel varname='make'>Make and Model</vlabel>
+		<vlabel varname='price'>Price</vlabel>
+		<vlabel varname='mpg'>Mileage (mpg)</vlabel>
+		<vlabel varname='rep78'>Repair Record 1978</vlabel>
+		<vlabel varname='headroom'>Headroom (in.)</vlabel>
+		<vlabel varname='trunk'>Trunk space (cu. ft.)</vlabel>
+		<vlabel varname='weight'>Weight (lbs.)</vlabel>
+		<vlabel varname='length'>Length (in.)</vlabel>
+		<vlabel varname='turn'>Turn Circle (ft.) </vlabel>
+		<vlabel varname='displacement'>Displacement (cu. in.)</vlabel>
+		<vlabel varname='gear_ratio'>Gear Ratio</vlabel>
+		<vlabel varname='foreign'>Car type</vlabel>
+	</variable_labels>
+	<expansion>
+		<char name='note0' vname='_dta'>1</char>
+		<char name='note1' vname='_dta'>from Consumer Reports with permission</char>
+	</expansion>
+	<data>
+		<o num='1'>
+			<v varname='make'>AMC Concord</v>
+			<v varname='price'>4099</v>
+			<v varname='mpg'>22</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>2930</v>
+			<v varname='length'>186</v>
+			<v varname='turn'>40</v>
+			<v varname='displacement'>121</v>
+			<v varname='gear_ratio'>3.579999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='2'>
+			<v varname='make'>AMC Pacer</v>
+			<v varname='price'>4749</v>
+			<v varname='mpg'>17</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>3350</v>
+			<v varname='length'>173</v>
+			<v varname='turn'>40</v>
+			<v varname='displacement'>258</v>
+			<v varname='gear_ratio'>2.529999971389771</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='3'>
+			<v varname='make'>AMC Spirit</v>
+			<v varname='price'>3799</v>
+			<v varname='mpg'>22</v>
+			<v varname='rep78'>.</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>12</v>
+			<v varname='weight'>2640</v>
+			<v varname='length'>168</v>
+			<v varname='turn'>35</v>
+			<v varname='displacement'>121</v>
+			<v varname='gear_ratio'>3.079999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='4'>
+			<v varname='make'>Buick Century</v>
+			<v varname='price'>4816</v>
+			<v varname='mpg'>20</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>4.500000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3250</v>
+			<v varname='length'>196</v>
+			<v varname='turn'>40</v>
+			<v varname='displacement'>196</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='5'>
+			<v varname='make'>Buick Electra</v>
+			<v varname='price'>7827</v>
+			<v varname='mpg'>15</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>20</v>
+			<v varname='weight'>4080</v>
+			<v varname='length'>222</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>350</v>
+			<v varname='gear_ratio'>2.410000085830688</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='6'>
+			<v varname='make'>Buick LeSabre</v>
+			<v varname='price'>5788</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>21</v>
+			<v varname='weight'>3670</v>
+			<v varname='length'>218</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='7'>
+			<v varname='make'>Buick Opel</v>
+			<v varname='price'>4453</v>
+			<v varname='mpg'>26</v>
+			<v varname='rep78'>.</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>10</v>
+			<v varname='weight'>2230</v>
+			<v varname='length'>170</v>
+			<v varname='turn'>34</v>
+			<v varname='displacement'>304</v>
+			<v varname='gear_ratio'>2.869999885559082</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='8'>
+			<v varname='make'>Buick Regal</v>
+			<v varname='price'>5189</v>
+			<v varname='mpg'>20</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3280</v>
+			<v varname='length'>200</v>
+			<v varname='turn'>42</v>
+			<v varname='displacement'>196</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='9'>
+			<v varname='make'>Buick Riviera</v>
+			<v varname='price'>10372</v>
+			<v varname='mpg'>16</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>3880</v>
+			<v varname='length'>207</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='10'>
+			<v varname='make'>Buick Skylark</v>
+			<v varname='price'>4082</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>13</v>
+			<v varname='weight'>3400</v>
+			<v varname='length'>200</v>
+			<v varname='turn'>42</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>3.079999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='11'>
+			<v varname='make'>Cad. Deville</v>
+			<v varname='price'>11385</v>
+			<v varname='mpg'>14</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>20</v>
+			<v varname='weight'>4330</v>
+			<v varname='length'>221</v>
+			<v varname='turn'>44</v>
+			<v varname='displacement'>425</v>
+			<v varname='gear_ratio'>2.279999971389771</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='12'>
+			<v varname='make'>Cad. Eldorado</v>
+			<v varname='price'>14500</v>
+			<v varname='mpg'>14</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3900</v>
+			<v varname='length'>204</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>350</v>
+			<v varname='gear_ratio'>2.190000057220459</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='13'>
+			<v varname='make'>Cad. Seville</v>
+			<v varname='price'>15906</v>
+			<v varname='mpg'>21</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>13</v>
+			<v varname='weight'>4290</v>
+			<v varname='length'>204</v>
+			<v varname='turn'>45</v>
+			<v varname='displacement'>350</v>
+			<v varname='gear_ratio'>2.240000009536743</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='14'>
+			<v varname='make'>Chev. Chevette</v>
+			<v varname='price'>3299</v>
+			<v varname='mpg'>29</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>9</v>
+			<v varname='weight'>2110</v>
+			<v varname='length'>163</v>
+			<v varname='turn'>34</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='15'>
+			<v varname='make'>Chev. Impala</v>
+			<v varname='price'>5705</v>
+			<v varname='mpg'>16</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>20</v>
+			<v varname='weight'>3690</v>
+			<v varname='length'>212</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>250</v>
+			<v varname='gear_ratio'>2.559999942779541</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='16'>
+			<v varname='make'>Chev. Malibu</v>
+			<v varname='price'>4504</v>
+			<v varname='mpg'>22</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>3180</v>
+			<v varname='length'>193</v>
+			<v varname='turn'>31</v>
+			<v varname='displacement'>200</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='17'>
+			<v varname='make'>Chev. Monte Carlo</v>
+			<v varname='price'>5104</v>
+			<v varname='mpg'>22</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3220</v>
+			<v varname='length'>200</v>
+			<v varname='turn'>41</v>
+			<v varname='displacement'>200</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='18'>
+			<v varname='make'>Chev. Monza</v>
+			<v varname='price'>3667</v>
+			<v varname='mpg'>24</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>7</v>
+			<v varname='weight'>2750</v>
+			<v varname='length'>179</v>
+			<v varname='turn'>40</v>
+			<v varname='displacement'>151</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='19'>
+			<v varname='make'>Chev. Nova</v>
+			<v varname='price'>3955</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>13</v>
+			<v varname='weight'>3430</v>
+			<v varname='length'>197</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>250</v>
+			<v varname='gear_ratio'>2.559999942779541</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='20'>
+			<v varname='make'>Dodge Colt</v>
+			<v varname='price'>3984</v>
+			<v varname='mpg'>30</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>8</v>
+			<v varname='weight'>2120</v>
+			<v varname='length'>163</v>
+			<v varname='turn'>35</v>
+			<v varname='displacement'>98</v>
+			<v varname='gear_ratio'>3.539999961853027</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='21'>
+			<v varname='make'>Dodge Diplomat</v>
+			<v varname='price'>4010</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>3600</v>
+			<v varname='length'>206</v>
+			<v varname='turn'>46</v>
+			<v varname='displacement'>318</v>
+			<v varname='gear_ratio'>2.470000028610229</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='22'>
+			<v varname='make'>Dodge Magnum</v>
+			<v varname='price'>5886</v>
+			<v varname='mpg'>16</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>3600</v>
+			<v varname='length'>206</v>
+			<v varname='turn'>46</v>
+			<v varname='displacement'>318</v>
+			<v varname='gear_ratio'>2.470000028610229</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='23'>
+			<v varname='make'>Dodge St. Regis</v>
+			<v varname='price'>6342</v>
+			<v varname='mpg'>17</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>4.500000000000000</v>
+			<v varname='trunk'>21</v>
+			<v varname='weight'>3740</v>
+			<v varname='length'>220</v>
+			<v varname='turn'>46</v>
+			<v varname='displacement'>225</v>
+			<v varname='gear_ratio'>2.940000057220459</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='24'>
+			<v varname='make'>Ford Fiesta</v>
+			<v varname='price'>4389</v>
+			<v varname='mpg'>28</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>1.500000000000000</v>
+			<v varname='trunk'>9</v>
+			<v varname='weight'>1800</v>
+			<v varname='length'>147</v>
+			<v varname='turn'>33</v>
+			<v varname='displacement'>98</v>
+			<v varname='gear_ratio'>3.150000095367432</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='25'>
+			<v varname='make'>Ford Mustang</v>
+			<v varname='price'>4187</v>
+			<v varname='mpg'>21</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>10</v>
+			<v varname='weight'>2650</v>
+			<v varname='length'>179</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>140</v>
+			<v varname='gear_ratio'>3.079999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='26'>
+			<v varname='make'>Linc. Continental</v>
+			<v varname='price'>11497</v>
+			<v varname='mpg'>12</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>22</v>
+			<v varname='weight'>4840</v>
+			<v varname='length'>233</v>
+			<v varname='turn'>51</v>
+			<v varname='displacement'>400</v>
+			<v varname='gear_ratio'>2.470000028610229</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='27'>
+			<v varname='make'>Linc. Mark V</v>
+			<v varname='price'>13594</v>
+			<v varname='mpg'>12</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>18</v>
+			<v varname='weight'>4720</v>
+			<v varname='length'>230</v>
+			<v varname='turn'>48</v>
+			<v varname='displacement'>400</v>
+			<v varname='gear_ratio'>2.470000028610229</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='28'>
+			<v varname='make'>Linc. Versailles</v>
+			<v varname='price'>13466</v>
+			<v varname='mpg'>14</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>15</v>
+			<v varname='weight'>3830</v>
+			<v varname='length'>201</v>
+			<v varname='turn'>41</v>
+			<v varname='displacement'>302</v>
+			<v varname='gear_ratio'>2.470000028610229</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='29'>
+			<v varname='make'>Merc. Bobcat</v>
+			<v varname='price'>3829</v>
+			<v varname='mpg'>22</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>9</v>
+			<v varname='weight'>2580</v>
+			<v varname='length'>169</v>
+			<v varname='turn'>39</v>
+			<v varname='displacement'>140</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='30'>
+			<v varname='make'>Merc. Cougar</v>
+			<v varname='price'>5379</v>
+			<v varname='mpg'>14</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>4060</v>
+			<v varname='length'>221</v>
+			<v varname='turn'>48</v>
+			<v varname='displacement'>302</v>
+			<v varname='gear_ratio'>2.750000000000000</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='31'>
+			<v varname='make'>Merc. Marquis</v>
+			<v varname='price'>6165</v>
+			<v varname='mpg'>15</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>23</v>
+			<v varname='weight'>3720</v>
+			<v varname='length'>212</v>
+			<v varname='turn'>44</v>
+			<v varname='displacement'>302</v>
+			<v varname='gear_ratio'>2.259999990463257</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='32'>
+			<v varname='make'>Merc. Monarch</v>
+			<v varname='price'>4516</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>15</v>
+			<v varname='weight'>3370</v>
+			<v varname='length'>198</v>
+			<v varname='turn'>41</v>
+			<v varname='displacement'>250</v>
+			<v varname='gear_ratio'>2.430000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='33'>
+			<v varname='make'>Merc. XR-7</v>
+			<v varname='price'>6303</v>
+			<v varname='mpg'>14</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>4130</v>
+			<v varname='length'>217</v>
+			<v varname='turn'>45</v>
+			<v varname='displacement'>302</v>
+			<v varname='gear_ratio'>2.750000000000000</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='34'>
+			<v varname='make'>Merc. Zephyr</v>
+			<v varname='price'>3291</v>
+			<v varname='mpg'>20</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>2830</v>
+			<v varname='length'>195</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>140</v>
+			<v varname='gear_ratio'>3.079999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='35'>
+			<v varname='make'>Olds 98</v>
+			<v varname='price'>8814</v>
+			<v varname='mpg'>21</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>20</v>
+			<v varname='weight'>4060</v>
+			<v varname='length'>220</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>350</v>
+			<v varname='gear_ratio'>2.410000085830688</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='36'>
+			<v varname='make'>Olds Cutl Supr</v>
+			<v varname='price'>5172</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3310</v>
+			<v varname='length'>198</v>
+			<v varname='turn'>42</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='37'>
+			<v varname='make'>Olds Cutlass</v>
+			<v varname='price'>4733</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>4.500000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3300</v>
+			<v varname='length'>198</v>
+			<v varname='turn'>42</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='38'>
+			<v varname='make'>Olds Delta 88</v>
+			<v varname='price'>4890</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>20</v>
+			<v varname='weight'>3690</v>
+			<v varname='length'>218</v>
+			<v varname='turn'>42</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='39'>
+			<v varname='make'>Olds Omega</v>
+			<v varname='price'>4181</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>4.500000000000000</v>
+			<v varname='trunk'>14</v>
+			<v varname='weight'>3370</v>
+			<v varname='length'>200</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>3.079999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='40'>
+			<v varname='make'>Olds Starfire</v>
+			<v varname='price'>4195</v>
+			<v varname='mpg'>24</v>
+			<v varname='rep78'>1</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>10</v>
+			<v varname='weight'>2730</v>
+			<v varname='length'>180</v>
+			<v varname='turn'>40</v>
+			<v varname='displacement'>151</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='41'>
+			<v varname='make'>Olds Toronado</v>
+			<v varname='price'>10371</v>
+			<v varname='mpg'>16</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>4030</v>
+			<v varname='length'>206</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>350</v>
+			<v varname='gear_ratio'>2.410000085830688</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='42'>
+			<v varname='make'>Plym. Arrow</v>
+			<v varname='price'>4647</v>
+			<v varname='mpg'>28</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>3260</v>
+			<v varname='length'>170</v>
+			<v varname='turn'>37</v>
+			<v varname='displacement'>156</v>
+			<v varname='gear_ratio'>3.049999952316284</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='43'>
+			<v varname='make'>Plym. Champ</v>
+			<v varname='price'>4425</v>
+			<v varname='mpg'>34</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>1800</v>
+			<v varname='length'>157</v>
+			<v varname='turn'>37</v>
+			<v varname='displacement'>86</v>
+			<v varname='gear_ratio'>2.970000028610229</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='44'>
+			<v varname='make'>Plym. Horizon</v>
+			<v varname='price'>4482</v>
+			<v varname='mpg'>25</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>2200</v>
+			<v varname='length'>165</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>105</v>
+			<v varname='gear_ratio'>3.369999885559082</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='45'>
+			<v varname='make'>Plym. Sapporo</v>
+			<v varname='price'>6486</v>
+			<v varname='mpg'>26</v>
+			<v varname='rep78'>.</v>
+			<v varname='headroom'>1.500000000000000</v>
+			<v varname='trunk'>8</v>
+			<v varname='weight'>2520</v>
+			<v varname='length'>182</v>
+			<v varname='turn'>38</v>
+			<v varname='displacement'>119</v>
+			<v varname='gear_ratio'>3.539999961853027</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='46'>
+			<v varname='make'>Plym. Volare</v>
+			<v varname='price'>4060</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>5.000000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3330</v>
+			<v varname='length'>201</v>
+			<v varname='turn'>44</v>
+			<v varname='displacement'>225</v>
+			<v varname='gear_ratio'>3.230000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='47'>
+			<v varname='make'>Pont. Catalina</v>
+			<v varname='price'>5798</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>4.000000000000000</v>
+			<v varname='trunk'>20</v>
+			<v varname='weight'>3700</v>
+			<v varname='length'>214</v>
+			<v varname='turn'>42</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='48'>
+			<v varname='make'>Pont. Firebird</v>
+			<v varname='price'>4934</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>1</v>
+			<v varname='headroom'>1.500000000000000</v>
+			<v varname='trunk'>7</v>
+			<v varname='weight'>3470</v>
+			<v varname='length'>198</v>
+			<v varname='turn'>42</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>3.079999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='49'>
+			<v varname='make'>Pont. Grand Prix</v>
+			<v varname='price'>5222</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>3210</v>
+			<v varname='length'>201</v>
+			<v varname='turn'>45</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='50'>
+			<v varname='make'>Pont. Le Mans</v>
+			<v varname='price'>4723</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>17</v>
+			<v varname='weight'>3200</v>
+			<v varname='length'>199</v>
+			<v varname='turn'>40</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>2.930000066757202</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='51'>
+			<v varname='make'>Pont. Phoenix</v>
+			<v varname='price'>4424</v>
+			<v varname='mpg'>19</v>
+			<v varname='rep78'>.</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>13</v>
+			<v varname='weight'>3420</v>
+			<v varname='length'>203</v>
+			<v varname='turn'>43</v>
+			<v varname='displacement'>231</v>
+			<v varname='gear_ratio'>3.079999923706055</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='52'>
+			<v varname='make'>Pont. Sunbird</v>
+			<v varname='price'>4172</v>
+			<v varname='mpg'>24</v>
+			<v varname='rep78'>2</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>7</v>
+			<v varname='weight'>2690</v>
+			<v varname='length'>179</v>
+			<v varname='turn'>41</v>
+			<v varname='displacement'>151</v>
+			<v varname='gear_ratio'>2.730000019073486</v>
+			<v varname='foreign'>0</v>
+		</o>
+		<o num='53'>
+			<v varname='make'>Audi 5000</v>
+			<v varname='price'>9690</v>
+			<v varname='mpg'>17</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>15</v>
+			<v varname='weight'>2830</v>
+			<v varname='length'>189</v>
+			<v varname='turn'>37</v>
+			<v varname='displacement'>131</v>
+			<v varname='gear_ratio'>3.200000047683716</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='54'>
+			<v varname='make'>Audi Fox</v>
+			<v varname='price'>6295</v>
+			<v varname='mpg'>23</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>2070</v>
+			<v varname='length'>174</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>97</v>
+			<v varname='gear_ratio'>3.700000047683716</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='55'>
+			<v varname='make'>BMW 320i</v>
+			<v varname='price'>9735</v>
+			<v varname='mpg'>25</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>12</v>
+			<v varname='weight'>2650</v>
+			<v varname='length'>177</v>
+			<v varname='turn'>34</v>
+			<v varname='displacement'>121</v>
+			<v varname='gear_ratio'>3.640000104904175</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='56'>
+			<v varname='make'>Datsun 200</v>
+			<v varname='price'>6229</v>
+			<v varname='mpg'>23</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>1.500000000000000</v>
+			<v varname='trunk'>6</v>
+			<v varname='weight'>2370</v>
+			<v varname='length'>170</v>
+			<v varname='turn'>35</v>
+			<v varname='displacement'>119</v>
+			<v varname='gear_ratio'>3.890000104904175</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='57'>
+			<v varname='make'>Datsun 210</v>
+			<v varname='price'>4589</v>
+			<v varname='mpg'>35</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>8</v>
+			<v varname='weight'>2020</v>
+			<v varname='length'>165</v>
+			<v varname='turn'>32</v>
+			<v varname='displacement'>85</v>
+			<v varname='gear_ratio'>3.700000047683716</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='58'>
+			<v varname='make'>Datsun 510</v>
+			<v varname='price'>5079</v>
+			<v varname='mpg'>24</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>8</v>
+			<v varname='weight'>2280</v>
+			<v varname='length'>170</v>
+			<v varname='turn'>34</v>
+			<v varname='displacement'>119</v>
+			<v varname='gear_ratio'>3.539999961853027</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='59'>
+			<v varname='make'>Datsun 810</v>
+			<v varname='price'>8129</v>
+			<v varname='mpg'>21</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>8</v>
+			<v varname='weight'>2750</v>
+			<v varname='length'>184</v>
+			<v varname='turn'>38</v>
+			<v varname='displacement'>146</v>
+			<v varname='gear_ratio'>3.549999952316284</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='60'>
+			<v varname='make'>Fiat Strada</v>
+			<v varname='price'>4296</v>
+			<v varname='mpg'>21</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>2130</v>
+			<v varname='length'>161</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>105</v>
+			<v varname='gear_ratio'>3.369999885559082</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='61'>
+			<v varname='make'>Honda Accord</v>
+			<v varname='price'>5799</v>
+			<v varname='mpg'>25</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>10</v>
+			<v varname='weight'>2240</v>
+			<v varname='length'>172</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>107</v>
+			<v varname='gear_ratio'>3.049999952316284</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='62'>
+			<v varname='make'>Honda Civic</v>
+			<v varname='price'>4499</v>
+			<v varname='mpg'>28</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>5</v>
+			<v varname='weight'>1760</v>
+			<v varname='length'>149</v>
+			<v varname='turn'>34</v>
+			<v varname='displacement'>91</v>
+			<v varname='gear_ratio'>3.299999952316284</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='63'>
+			<v varname='make'>Mazda GLC</v>
+			<v varname='price'>3995</v>
+			<v varname='mpg'>30</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>1980</v>
+			<v varname='length'>154</v>
+			<v varname='turn'>33</v>
+			<v varname='displacement'>86</v>
+			<v varname='gear_ratio'>3.730000019073486</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='64'>
+			<v varname='make'>Peugeot 604</v>
+			<v varname='price'>12990</v>
+			<v varname='mpg'>14</v>
+			<v varname='rep78'>.</v>
+			<v varname='headroom'>3.500000000000000</v>
+			<v varname='trunk'>14</v>
+			<v varname='weight'>3420</v>
+			<v varname='length'>192</v>
+			<v varname='turn'>38</v>
+			<v varname='displacement'>163</v>
+			<v varname='gear_ratio'>3.579999923706055</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='65'>
+			<v varname='make'>Renault Le Car</v>
+			<v varname='price'>3895</v>
+			<v varname='mpg'>26</v>
+			<v varname='rep78'>3</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>10</v>
+			<v varname='weight'>1830</v>
+			<v varname='length'>142</v>
+			<v varname='turn'>34</v>
+			<v varname='displacement'>79</v>
+			<v varname='gear_ratio'>3.720000028610229</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='66'>
+			<v varname='make'>Subaru</v>
+			<v varname='price'>3798</v>
+			<v varname='mpg'>35</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>2050</v>
+			<v varname='length'>164</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>97</v>
+			<v varname='gear_ratio'>3.809999942779541</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='67'>
+			<v varname='make'>Toyota Celica</v>
+			<v varname='price'>5899</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>14</v>
+			<v varname='weight'>2410</v>
+			<v varname='length'>174</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>134</v>
+			<v varname='gear_ratio'>3.059999942779541</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='68'>
+			<v varname='make'>Toyota Corolla</v>
+			<v varname='price'>3748</v>
+			<v varname='mpg'>31</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>9</v>
+			<v varname='weight'>2200</v>
+			<v varname='length'>165</v>
+			<v varname='turn'>35</v>
+			<v varname='displacement'>97</v>
+			<v varname='gear_ratio'>3.210000038146973</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='69'>
+			<v varname='make'>Toyota Corona</v>
+			<v varname='price'>5719</v>
+			<v varname='mpg'>18</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>11</v>
+			<v varname='weight'>2670</v>
+			<v varname='length'>175</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>134</v>
+			<v varname='gear_ratio'>3.049999952316284</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='70'>
+			<v varname='make'>VW Dasher</v>
+			<v varname='price'>7140</v>
+			<v varname='mpg'>23</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>12</v>
+			<v varname='weight'>2160</v>
+			<v varname='length'>172</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>97</v>
+			<v varname='gear_ratio'>3.740000009536743</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='71'>
+			<v varname='make'>VW Diesel</v>
+			<v varname='price'>5397</v>
+			<v varname='mpg'>41</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>15</v>
+			<v varname='weight'>2040</v>
+			<v varname='length'>155</v>
+			<v varname='turn'>35</v>
+			<v varname='displacement'>90</v>
+			<v varname='gear_ratio'>3.779999971389771</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='72'>
+			<v varname='make'>VW Rabbit</v>
+			<v varname='price'>4697</v>
+			<v varname='mpg'>25</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>3.000000000000000</v>
+			<v varname='trunk'>15</v>
+			<v varname='weight'>1930</v>
+			<v varname='length'>155</v>
+			<v varname='turn'>35</v>
+			<v varname='displacement'>89</v>
+			<v varname='gear_ratio'>3.779999971389771</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='73'>
+			<v varname='make'>VW Scirocco</v>
+			<v varname='price'>6850</v>
+			<v varname='mpg'>25</v>
+			<v varname='rep78'>4</v>
+			<v varname='headroom'>2.000000000000000</v>
+			<v varname='trunk'>16</v>
+			<v varname='weight'>1990</v>
+			<v varname='length'>156</v>
+			<v varname='turn'>36</v>
+			<v varname='displacement'>97</v>
+			<v varname='gear_ratio'>3.779999971389771</v>
+			<v varname='foreign'>1</v>
+		</o>
+		<o num='74'>
+			<v varname='make'>Volvo 260</v>
+			<v varname='price'>11995</v>
+			<v varname='mpg'>17</v>
+			<v varname='rep78'>5</v>
+			<v varname='headroom'>2.500000000000000</v>
+			<v varname='trunk'>14</v>
+			<v varname='weight'>3170</v>
+			<v varname='length'>193</v>
+			<v varname='turn'>37</v>
+			<v varname='displacement'>163</v>
+			<v varname='gear_ratio'>2.980000019073486</v>
+			<v varname='foreign'>1</v>
+		</o>
+	</data>
+	<value_labels>
+		<vallab name='origin'>
+			<label value='0'>Domestic</label>
+			<label value='1'>Foreign</label>
+		</vallab>
+	</value_labels>
+</dta>
