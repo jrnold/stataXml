@@ -11,22 +11,31 @@
 ## writing can go to either xml or binary.
 library(XML)
 
+## For non variable names, I just need to truncate.
+strtrunc <- function(x, n) {
+    tooLong <- nchar(x) > n
+    x[ tooLong ] <- substr(x[ tooLong ], 1, n)
+}
+
+## Origin date
+SATA.EPOCH <- as.Date("1960-01-01")
+
 ## From stata 10
 ## help limits
 STATA.LIMITS <- list(## dataset sizes
                      nobs = c(small=1000, IC=2147483647, SE=2147483647),
                      varnum = c(small=99, IC=2047, SE=32767),  # number of variables
-                     datawidth= c(small=200, IC=24564, SE=393192)  # width of a dataset
+                     datawidth= c(small=200, IC=24564, SE=393192),  # width of a dataset
                      ## labels
-                     labeldata = 80  # dataset label
-                     labelvar = 80   # variable label
-                     labelvalstr = 32000 # length of value label string
-                     labelvalname = 32 # length of name of value label
-                     labelvalcodings = c(small=1000, IC=65536, SE=65536)
+                     labeldata = 80,  # dataset label
+                     labelvar = 80,   # variable label
+                     labelvalstr = 32000, # length of value label string
+                     labelvalname = 32, # length of name of value label
+                     labelvalcodings = c(small=1000, IC=65536, SE=65536),
                                         # number of codings within one value label
                      ## Misc
-                     strvar = 244    # length of string variable
-                     varname = 32    # Length of variable name
+                     strvar = 244,    # length of string variable
+                     varname = 32,    # Length of variable name
                      char = 67784    # length of one characteristic
                      )
 
@@ -43,12 +52,12 @@ STATA.DATATYPES <- list(## number of bytes, min, max
 
 STATA.TIMESTAMP.FMT <- "%d %b %Y %H:%M"
 STATA.FILETYPE <- 1
-STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>'
+STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>\n'
 .stataVersions <- list("114"="10", "113"="8")
 
 .convertUnderscores <- function(x) gsub(x, "_", ".")
 
-.stataMissingType <- function(x, na.rm=TRUE) {
+.findStataMissings <- function(x, na.rm=TRUE) {
     ## if not a missing value then NA is returned
     ## if a missing value, then index of c(".", ..., ".z") returned.
     ## I subtract 1 to get 0-26, and the NAs remain NAs
@@ -58,7 +67,7 @@ STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>'
     if (na.rm) {
        ret <- ret[ ! is.na(ret) ]
     }
-    factor(ret, labels=missings)
+    factor(ret, levels=0:26, labels=missings)
 }
 
 stataConvertFactors <- function(dataframe, convert.factors) {
@@ -105,47 +114,47 @@ read.stataXml <- function(file,
     ds_format <- xmlValue(getNodeSet(doc, "//ds_format[1]")[[1]])
 
     ## byte order LOHI or HILO
-    ## byteorder <- xmlValue(getNodeSet(doc, "//byteorder[1]")[[1]])
-
-    ## nvar <- as.integer(xmlValue(getNodeSet(doc, "//nvar[1]")[[1]]))
-    nobs <- as.integer(xmlValue(getNodeSet(doc, "//nobs[1]")[[1]]))
-    datalabel <- xmlValue(getNodeSet(doc, "//data_label[1]")[[1]])
-    timestamp <- strptime(xmlValue(getNodeSet(doc, "//time_stamp[1]")[[1]]),
-                          STATA.TIMESTAMP.FORMAT)
+    ## byteorder <- xmlValue(getNodeSet(doc, "/dta/header/byteorder[1]")[[1]])
+    ## filetype <- xmlValue(getNodeSet(doc, "/dta/header/filetype[1]")[[1]])
+    nvar <- as.integer(xmlValue(getNodeSet(doc, "/dta/header/nvar[1]")[[1]]))
+    nobs <- as.integer(xmlValue(getNodeSet(doc, "/dta/header/nobs[1]")[[1]]))
+    datalabel <- xmlValue(getNodeSet(doc, "/dta/header/data_label[1]")[[1]])
+    timestamp <- strptime(xmlValue(getNodeSet(doc, "/dta/header/time_stamp[1]")[[1]]),
+                          STATA.TIMESTAMP.FMT)
 
     ## Descriptors
-    descriptors <- getNodeSet(doc, "//descriptors[1]")[[1]]
-    typelist <- xpathSApply(descriptors, "//type", xmlValue)
+    typelist <- xpathSApply(doc, "/dta/descriptors/typelist/type", xmlValue)
     ## variable list
-    varlist <- xpathSApply(descriptors, "//variable", xmlGetAttr, name="varname")
+    varlist <- xpathSApply(doc, "/dta/descriptors/varlist/variable", xmlGetAttr, name="varname")
     ## sort list
-    srtlist <- xpathSApply(descriptors, "//sort", xmlValue)
+    srtlist <- xpathSApply(doc, "/dta/descriptors/srtlist/sort", xmlGetAttr, name='varname')
     ## format list
-    fmtlist <- xpathSApply(descriptors, "//fmt", xmlValue)
+    fmtlist <- xpathSApply(doc, "/dta/descriptors/fmtlist/fmt", xmlValue)
     ## value labels attached to each variable
-    lbllist <- xpathSApply(descriptors, "//lblname", xmlValue)
+    lbllist <- xpathSApply(doc, "/dta/descriptors/lbllist/lblname", xmlValue)
 
     ## Variable Labels
-    vlabels <- xpathSApply(doc, "//vlabel", xmlValue)
+    vlabels <- xpathSApply(doc, "/dta/variable_labels/vlabel", xmlValue)
 
     ## Expansions
-    ## currently only char
+    ## currently only char (including notes)
     char <- list()
-    charNodes <- getNodeSet(getNodeSet(doc, "//expansion[1]")[[1]], "//char")
-    evarnameList <- unique(sapply(charNodes, xmlGetAttr, name="vname"))
-    char <- replicate(length(evarnameList), list())
-    names(char) <- evarnameList
+    charNodes <- getNodeSet(doc, "/dta/expansion/char")
+    vnameList <- unique(sapply(charNodes, xmlGetAttr, name="vname"))
+    char <- replicate(length(vnameList), list())
+    names(char) <- vnameList
     for (node in charNodes) {
-        evarname <- xmlGetAttr(node, name="vname")
+        vname <- xmlGetAttr(node, name="vname")
         charname <- xmlGetAttr(node, name="name")
-        char[[ c(evarname, charname) ]] <- xmlValue(node)
+        char[[ c(vname, charname) ]] <- xmlValue(node)
     }
 
     ## Value Labels
-    vallabelNodes <- getNodeSet(doc, "//vallab")
-    vallab <- vector(mode="list", length=length(labelnames))
-    names(vallab) <- sapply(vallabelNodes, xmlGetAttr, name="name")
-    for ( node in vallabelNodes) {
+    valueLabels <- getNodeSet(doc, "/dta/value_labels/vallab")
+    browser()
+    vallab <- vector(mode="list", length=length(valueLabels))
+    names(vallab) <- sapply(valueLabels, xmlGetAttr, name="name")
+    for ( node in valueLabels) {
         labname <- xmlGetAttr(node, "name")
         values <- as.integer(xpathSApply(node, "//label", xmlGetAttr, name="value"))
         names(values) <- xpathSApply(node, "//label", xmlValue)
@@ -159,8 +168,7 @@ read.stataXml <- function(file,
 
     ## if types of missing values are stored initialize the list.
     if (missing.type) {
-        missingValues <- vector(mode="list", length=length(varlist))
-        names(missingValues) <- varlist
+        missingValues <- list()
     }
 
     ## Parse Data
@@ -172,10 +180,14 @@ read.stataXml <- function(file,
 
         ## Missing values
         if (vartype != "character") {
+
             ## Keep track of the types of missing values
             if (missing.type) {
                 ## Only keep values for the missing variables to conserve memory
-                missingValues[[ x ]] <- .stataMissingTypes(var)
+                xMiss <- .findStataMissings(var)
+                if ( length(xMiss)) {
+                    missingValues[[ x ]] <- xMiss
+                }
             }
 
             ## replace missings with "". they will be converted to NA by "as"
@@ -197,15 +209,13 @@ read.stataXml <- function(file,
     }
     rm(var)
 
-    ## Post processing
-
     ## Convert underscores
     if (convert.underscore)  {
         names(res) <- .convertUnderscores(names(res))
     }
 
     ## Add attributes
-    attr(res, "version") <- .stataVersions[[ ds_format ]]
+    attr(res, "version") <- ds_format
     attr(res, "time.stamp") <- timestamp
     attr(res, "datalabel") <- datalabel
     attr(res, "formats") <- fmtlist
@@ -215,6 +225,7 @@ read.stataXml <- function(file,
     attr(res, "sort") <- srtlist
     attr(res, "char") <- char
     attr(res, "label.table") <- vallab
+    attr(res, "dta_type") <- "xml"
     if (missing.type) {
         attr(res, "missing") <- missingValues
     }
@@ -253,16 +264,19 @@ read.stataXml <- function(file,
 
 write.stataXml <- function(dataframe, file,
                            convert.factors="codes",
-                           sortlist=NULL,
+                           sortlist="",
                            fmtlist=NULL,
                            typelist=NULL,
                            datalabel="Written by R.",
                            variableLabels=rep("", ncol(dataframe)),
                            char=list(),
-                           verbose=FALSE)
+                           verbose=FALSE,
+                           double=TRUE)
 {
     ## Header Info
     dsFormat <- 113
+    ## The byte order doesn't matter in these xml files, but it's still
+    ## included for some reason.
     if (.Platform$endian == "little") {
         byteorder <- "LOHI"
     } else {
@@ -282,15 +296,39 @@ write.stataXml <- function(dataframe, file,
     dataframe <- convertStataFactors(dataframe, convert.factors)
 
     ## Variable Types
+    ## numeric : by default converted to double, however, setting
+    ## the option double=FALSE, will instead store them as float.
+    ##
+    ## integer : Stata has three kinds of integers: 'byte', 'int', and 'long'.
+    ## I find the smallest type that will include the whole range.
+    ##
+    ## character : convert to the smallest str size that will include all
+    ## the characters.
     if (is.null(typelist)) {
         typelist <- sapply(dataframe, function(x) {
             vartype <- class(x)[1]
             if (vartype == "numeric") {
-                ret <- "double"
+                if (double) {
+                    ret <- "double"
+                } else {
+                    ret <- "float"
+                }
             } else if (vartype == "integer") {
-                ret <- "long"
+                xMin <- min(x, na.rm=TRUE)
+                xMax <- max(x, na.rm=TRUE)
+                if (xMin >= STATA.DATATYPES[["byte"]][2] &
+                    xMax <= STATA.DATATYPES[["byte"]][3])
+                {
+                    ret <- "byte"
+                } else if (xMin >= STATA.DATATYPES[["int"]][2] &
+                           xMax <= STATA.DATATYPES[["int"]][3])
+                {
+                    ret <- "int"
+                } else {
+                    ret <- "long"
+                }
             } else if (vartype == "character") {
-                maxstr <- max(nchar(x))
+                maxstr <- min(max(nchar(x)), STATA.DATATYPE[["str"]][2])
                 ret <- paste("str", maxstr, sep="")
             } else {
                 stop(vartype, "not supported.")
@@ -326,15 +364,20 @@ write.stataXml <- function(dataframe, file,
                              })
     }
 
+    ## Ensuring correct Lengths
+
     ## Sorting List
     ## From what I can tell, srtlist cannot be empty.
     ## If a dataset is saved without any sorted by characteristic
     ## stata seems to choose a random variable but NOT actually sort
     ## the dataset by it.
     ## I will not enforce that the dataset is actually sorted by the sortlist
-    if (is.null(sortlist)) {
-        sortlist <- varlist[1]
-    }
+    ## if (is.null(sortlist)) {
+    ##     sortlist <- varlist[1]
+    ## }
+
+    ## Variable names
+    varlist <- abbreviate(varlist, STATA.LIMITS[["varname"]])
 
     ### Writing out xml
     z <- xmlTree("dta")
@@ -423,8 +466,7 @@ write.stataXml <- function(dataframe, file,
     z$closeTag()
 
     ## TODO value_label table
-
-    saveXML(z, file=file)
+    saveXML(z, file=file, indent=(! verbose), prefix=STATA.XMLHEADER)
 
 }
 
