@@ -9,51 +9,65 @@
 ## value_label table
 ## My goal: Do everything in R, except the writing.
 ## writing can go to either xml or binary.
+## TODO: use make.names and replace . with _ for data.frame names
 library(XML)
 
 ## For non variable names, I just need to truncate.
 strtrunc <- function(x, n) {
-    tooLong <- nchar(x) > n
+    tooLong <- (nchar(x) > n)
     x[ tooLong ] <- substr(x[ tooLong ], 1, n)
 }
 
-## Origin date
-SATA.EPOCH <- as.Date("1960-01-01")
+## Ensure valid stata names
+stataVarname <- function(x) {
+    gsub("\\.", "_", abbreviate(make.names(x), 32L))
+}
+stataValLabelName <- function(...) stataVarname(...)
+
+stataVarLabel <- function(x) strtrunc(x, 80L)
+stataDataLabel <- function(...) stataVarLabel(...)
+
+stataStr <- function(x) strtrunc(x, 244L)
+stataValLabelStr <- function(x) strtrunc(x, 32000L)
+stataCharStr <- function(x) strtrunc(x, 67748L)
+
+## Origin date for Stata Date Variables
+STATA.EPOCH <- as.Date("1960-01-01")
 
 ## From stata 10
 ## help limits
 STATA.LIMITS <- list(## dataset sizes
-                     nobs = c(small=1000, IC=2147483647, SE=2147483647),
-                     varnum = c(small=99, IC=2047, SE=32767),  # number of variables
-                     datawidth= c(small=200, IC=24564, SE=393192),  # width of a dataset
+                     nobs = as.integer(c(small=1000, IC=2147483647, SE=2147483647)),
+                     varnum = as.integer(c(small=99, IC=2047, SE=32767)),  # number of variables
+                     datawidth= as.integer(c(small=200, IC=24564, SE=393192)),  # width of a dataset
                      ## labels
-                     labeldata = 80,  # dataset label
-                     labelvar = 80,   # variable label
-                     labelvalstr = 32000, # length of value label string
-                     labelvalname = 32, # length of name of value label
-                     labelvalcodings = c(small=1000, IC=65536, SE=65536),
+                     labeldata = 80L,  # dataset label
+                     labelvar = 80L,   # variable label
+                     labelvalstr = 32000L, # length of value label string
+                     labelvalname = 32L, # length of name of value label
+                     labelvalcodings = as.integer(c(small=1000, IC=65536, SE=65536)),
                                         # number of codings within one value label
                      ## Misc
-                     strvar = 244,    # length of string variable
-                     varname = 32,    # Length of variable name
-                     char = 67784    # length of one characteristic
+                     strvar = 244L,    # length of string variable
+                     varname = 32L,    # Length of variable name
+                     char = 67784L    # length of one characteristic
                      )
 
 ## help data_types
 STATA.DATATYPES <- list(## number of bytes, min, max
-                        byte=c(1, -127, 100),
-                        int=c(2, -32767, 32740),
-                        long=c(4, -2147483647, 2147483620),
+                        byte=as.integer(c(1, -127, 100)),
+                        int=as.integer(c(2, -32767, 32740)),
+                        long=as.integer(c(4, -2147483647, 2147483620)),
                         ## bytes, min, max, 10^-x (negative power of ten for closes to 0 without being 0)
                         float=c(4, -1.70141173319e+38, 1.70141173319e+38, 38),
                         double=c(8, -8.9884656743e+307, 8.9884656743e+307, 323),
                         ## min, max number of bytes
-                        str=c(1,244))
+                        str=c(1L, 244L))
 
 STATA.TIMESTAMP.FMT <- "%d %b %Y %H:%M"
 STATA.FILETYPE <- 1
 STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>\n'
-.stataVersions <- list("114"="10", "113"="8")
+.stataVersions <- c("114"="10", "113"="8")
 
 .convertUnderscores <- function(x) gsub(x, "_", ".")
 
@@ -68,30 +82,6 @@ STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>\n
        ret <- ret[ ! is.na(ret) ]
     }
     factor(ret, levels=0:26, labels=missings)
-}
-
-stataConvertFactors <- function(dataframe, convert.factors) {
-    factors <- which(sapply(dataframe,is.factor))
-    if(convert.factors == "string") {
-        for(v in factors)
-            dataframe[[v]] <- I(as.character(dataframe[[v]]))
-    } else if (convert.factors == "numeric") {
-        for(v in factors)
-            dataframe[[v]] <- as.integer(as.character(dataframe[[v]]))
-    } else if (convert.factors == "codes") {
-        for (v in factors)
-            dataframe[[v]] <- as.integer(dataframe[[v]])
-    }
-
-    shortlevels <- function(f) {
-        ll <- levels(f)
-        if (is.null(ll)) return(NULL)
-        abbreviate(ll, 80L)
-    }
-    leveltable <- lapply(dataframe,shortlevels)
-
-    attr(dataframe, "leveltable") <- leveltable
-    dataframe
 }
 
 read.stataXml <- function(file,
@@ -151,7 +141,6 @@ read.stataXml <- function(file,
 
     ## Value Labels
     valueLabels <- getNodeSet(doc, "/dta/value_labels/vallab")
-    browser()
     vallab <- vector(mode="list", length=length(valueLabels))
     names(vallab) <- sapply(valueLabels, xmlGetAttr, name="name")
     for ( node in valueLabels) {
@@ -233,38 +222,13 @@ read.stataXml <- function(file,
     ## Free up memory
     free(doc)
 
-    ## Return
+    ## Return new dataframe
     res
 }
 
-## header
-##     ds_format
-##     byteorder
-##     filetype
-##     nvar
-##     nobs
-##     data_label
-##     time_stamp
-## descriptors
-##     typelist
-##        type[ varname] value
-##     varlist
-##        variable[varname]
-##     srtlist
-##        sort[varname]
-##     fmtlist
-##        varname[varname] format
-##     lbllist
-##        lblname[make]
-## expansion
-## data
-##    o  {observation}
-##      v {variable}
-## labels
-
 write.stataXml <- function(dataframe, file,
-                           convert.factors="codes",
-                           sortlist="",
+                           convert.factors="labels",
+                           sortlist=character(),
                            fmtlist=NULL,
                            typelist=NULL,
                            datalabel="Written by R.",
@@ -292,8 +256,27 @@ write.stataXml <- function(dataframe, file,
     varlist <- names(dataframe)
 
     ## Cleaning Data Frame
-    ## convertfactors
-    dataframe <- convertStataFactors(dataframe, convert.factors)
+
+    ## Factors and Generating a Value Label List if any
+    valueLabels <- list()
+
+    factors <- which(sapply(dataframe, is.factor))
+    for(v in factors) {
+        if(convert.factors == "string") {
+            dataframe[[v]] <- as.character(dataframe[[v]])
+        } else if (convert.factors == "numeric") {
+            dataframe[[v]] <- as.integer(as.character(dataframe[[v]]))
+        } else if (convert.factors == "codes") {
+            dataframe[[v]] <- as.integer(dataframe[[v]])
+        } else {
+            ## We keep the factors and treat them as values.
+
+            lblname <- names(dataframe)[v]
+            valueLabels[[lblname]] <- levels(dataframe[[v]])
+
+            dataframe[[v]] <- as.integer(dataframe[[v]])
+        }
+    }
 
     ## Variable Types
     ## numeric : by default converted to double, however, setting
@@ -328,7 +311,7 @@ write.stataXml <- function(dataframe, file,
                     ret <- "long"
                 }
             } else if (vartype == "character") {
-                maxstr <- min(max(nchar(x)), STATA.DATATYPE[["str"]][2])
+                maxstr <- min(max(nchar(x)), STATA.DATATYPES[["str"]][2])
                 ret <- paste("str", maxstr, sep="")
             } else {
                 stop(vartype, "not supported.")
@@ -338,13 +321,13 @@ write.stataXml <- function(dataframe, file,
     }
 
     ## Variable Display Formats
-    if (is.null(formatlist)) {
+    if (is.null(fmtlist)) {
         default.formats <- list(byte = "%8.0g",
                                 int = "%8.0g",
                                 long = "%8.0g",
                                 float = "%9.0g",
                                 double = "%10.0g")
-        formatlist <- sapply(typelist,
+        fmtlist <- sapply(typelist,
                              function(x) {
                                  ## For strings the default format appears to be
                                  ## %9s for str1-str9
@@ -366,59 +349,48 @@ write.stataXml <- function(dataframe, file,
 
     ## Ensuring correct Lengths
 
-    ## Sorting List
-    ## From what I can tell, srtlist cannot be empty.
-    ## If a dataset is saved without any sorted by characteristic
-    ## stata seems to choose a random variable but NOT actually sort
-    ## the dataset by it.
-    ## I will not enforce that the dataset is actually sorted by the sortlist
-    ## if (is.null(sortlist)) {
-    ##     sortlist <- varlist[1]
-    ## }
-
-    ## Variable names
-    varlist <- abbreviate(varlist, STATA.LIMITS[["varname"]])
-
     ### Writing out xml
-    z <- xmlTree("dta")
+    z <- xmlTree()
+    z$addTag("dta", close=FALSE)
 
     ## header
-    z$addNode("header", close=FALSE)
-    z$addNode("ds_format", dsFormat)
-    z$addNode("byteorder", byteorder)
-    z$addNode("nvar", nvar)
-    z$addNode("nobs", nobs)
-    z$addNode("data_label", datalabel)
-    z$addNode("time_stamp", strftime(Sys.time(), STATA.TIMESTAMP.FMT))
+    z$addTag("header", close=FALSE)
+    z$addTag("ds_format", dsFormat)
+    z$addTag("byteorder", byteorder)
+    z$addTag("nvar", nvar)
+    z$addTag("nobs", nobs)
+    z$addTag("data_label", datalabel)
+    z$addTag("time_stamp", strftime(Sys.time(), STATA.TIMESTAMP.FMT))
     z$closeTag()
 
     ## Descriptors Start
-    z$addNode("descriptors", close=FALSE)
+    z$addTag("descriptors", close=FALSE)
     ## Type List
-    z$addNode("typelist", close=FALSE)
+    z$addTag("typelist", close=FALSE)
     for (i in seq_along(typelist)) {
-        z$addNode("type", typelist[i], attr=list(varname=varlist[i]))
+        z$addTag("type", typelist[i], attrs=c("varname"=varlist[i]))
     }
     z$closeTag()
 
     ## Variable List
-    z$addNode("varlist", close=FALSE)
+    z$addTag("varlist", close=FALSE)
     for (x in varlist) {
-        z$addNode("variable", attr=list(varname=x))
+        z$addTag("variable", attrs=c("varname"=x))
     }
     z$closeTag()
 
     ## sortlist
     z$addTag("srtlist", close=FALSE)
     for (x in sortlist) {
-        z$addNode("sort", x)
+        z$addTag("sort", attrs=c('varname'=x))
     }
     z$closeTag()
 
     ## Format List
     z$addTag("fmtlist", close=FALSE)
-    for (i in seq_along(formatlist)) {
-        z$addNode("fmt", formatlist[i], attr=list(varname=varlist[i]))
+    for (i in seq_along(fmtlist)) {
+        var = varlist[i]
+        z$addTag("fmt", fmtlist[i], attrs=c("varname"=var))
     }
     z$closeTag()
 
@@ -426,9 +398,9 @@ write.stataXml <- function(dataframe, file,
     z$closeTag()
 
     ## Variable Labels
-    z$addNode("variable_labels")
+    z$addTag("variable_labels")
     for (i in seq_along(varlist)) {
-        z$addNode("vlabel", variableLabels[i], attr=list(varname=varlist[i]))
+        z$addTag("vlabel", variableLabels[i], attrs=c("varname"=varlist[i]))
     }
     z$closeTag()
 
@@ -437,36 +409,48 @@ write.stataXml <- function(dataframe, file,
     ## notes are implemented as char, where
     ## note0 = number of notes.
     ## notes[1-note0] = note value
-    z$addNode("expansion", close=FALSE)
+    z$addTag("expansion", close=FALSE)
     for (vname in names(char)) {
         for (charname in names(char[[vname]])) {
-            z$addNode("char", char[[vname]][[charname]],
-                      attr=list(name=charname, vname=vname))
+            z$addTag("char", char[[vname]][[charname]],
+                      attrs=c("name"=charname, "vname"=vname))
         }
     }
     z$closeTag()
 
     ## Data
-    z$addNode("data", close=FALSE)
+    z$addTag("data", close=FALSE)
     for (i in seq_len(nobs)) {
         if (! verbose) {
-            z$addNode('o', close=FALSE)
+            z$addTag('o', close=FALSE)
         } else {
-            z$addNode('o', attr=list(num=i), close=FALSE)
+            z$addTag('o', attrs=c("num"=i), close=FALSE)
         }
         for (j in seq_len(nvar)) {
             if (! verbose) {
-                z$addNode('v', dataframe[i, j])
+                z$addTag('v', dataframe[i, j])
             } else {
-                z$addNode('v', dataframe[i, j],  attr=list(varname=varlist[j]))
+                z$addTag('v', dataframe[i, j],  attrs=c("varname"=varlist[j]))
             }
         }
         z$closeTag()
     }
     z$closeTag()
 
-    ## TODO value_label table
-    saveXML(z, file=file, indent=(! verbose), prefix=STATA.XMLHEADER)
+    z$addTag("value_labels", close=FALSE)
+    for (vallab in names(valueLabels)) {
+        z$addTag("vallab", attrs=c('name'=vallab), close=FALSE)
+        for ( i  in seq_along(valueLabels[[vallab]])) {
+            z$addTag('label', valueLabels[[vallab]][i],  attrs=c('value'=i))
+        }
+        z$closeTag() # vallab
+    }
+    z$closeTag() # value_labels
+
+    z$closeTag() #dta
+
+    ## Prefix does not seem to work.
+    saveXML(z, file=file, indent=verbose, prefix=STATA.XMLHEADER)
 
 }
 
