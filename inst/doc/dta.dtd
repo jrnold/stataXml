@@ -1,0 +1,47 @@
+<!ELEMENT dta (header, descriptors,
+	variable_labels, expansion,
+	data, value_labels)>
+<!ELEMENT header (ds_format, byteorder,
+	filetype, nvar, nobs, data_label,
+	time_stamp)>
+<!ELEMENT ds_format (#PCDATA)>
+<!ELEMENT byteorder (#PCDATA)>
+<!ELEMENT filetype (#PCDATA)>
+<!ELEMENT nvar (#PCDATA)>
+<!ELEMENT nobs (#PCDATA)>
+<!ELEMENT data_label (#PCDATA)>
+<!ELEMENT time_stamp (#PCDATA)>
+<!ELEMENT descriptors (typelist, varlist,
+	srtlist, fmtlist, lbllist)>
+<!ELEMENT typelist (type)+>
+<!ELEMENT type (#PCDATA)>
+<!ATTLIST type varname IDREF #REQUIRED>
+<!ELEMENT varlist (variable)+>
+<!ELEMENT variable EMPTY>
+<!ATTLIST variable varname ID #REQUIRED>
+<!ELEMENT srtlist (sort)*>
+<!ELEMENT sort EMPTY>
+<!ATTLIST sort varname IDREF #REQUIRED>
+<!ELEMENT fmtlist (fmt)+>
+<!ELEMENT fmt (#PCDATA)>
+<!ATTLIST fmt varname IDREF #REQUIRED>
+<!ELEMENT lbllist (lblname)*>
+<!ELEMENT lblname (#PCDATA)>
+<!ATTLIST lblname varname IDREF #REQUIRED>
+<!ELEMENT variable_labels (vlabel)*>
+<!ELEMENT vlabel (#PCDATA)>
+<!ATTLIST vlabel varname IDREF #REQUIRED>
+<!ELEMENT expansion (char)*>
+<!ELEMENT char (#PCDATA)>
+<!ATTLIST char name  NMTOKEN #REQUIRED>
+<!ATTLIST char vname NMTOKEN #REQUIRED>
+<!ELEMENT data (o)*>
+<!ELEMENT o (v)*>
+<!ATTLIST o num NMTOKEN #IMPLIED>
+<!ELEMENT v (#PCDATA)*>
+<!ATTLIST v varname IDREF #IMPLIED>
+<!ELEMENT value_labels (vallab)*>
+<!ELEMENT vallab (label)+>
+<!ATTLIST vallab name  NMTOKEN #REQUIRED>
+<!ELEMENT label (#PCDATA)>
+<!ATTLIST label value NMTOKEN #REQUIRED>
