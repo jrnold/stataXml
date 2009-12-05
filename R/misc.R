@@ -25,15 +25,14 @@ fromStataTime <- function(x, fmt, tz='') {
     } else if (fmt == "tw") {
         ## Stata uses a non-standard week format.
         ## Jan 1 always starts week 1.
-        ## Jan 7 always starts week 2, etc.
+        ## Jan 8 always starts week 2, etc.
         ## There is no week 53; week 52 has more than 7 days.
         yy <- floor(x / 52) + STATA.ORIGIN.Y
         wk <- floor(x %% 52) + 1
         frac <- (x %% 52) %% 1
         dstart <- as.Date(paste(yy, 1, 1, sep='-')) + (wk - 1) * 7
-        dend <- (wk == 52) * as.numeric(as.Date(paste(yy + 1, 1, 1)) +
-                 (wk != 52) * as.numeric(as.Date(paste(yy, 1, 1, sep='-'))) + wk * 7))
-
+        dend <- as.Date(paste( yy + (wk==52), 1, 1, sep='-')) + (wk %% 52)  * 7
+        ret <- dstart + frac * as.numeric(difftime(dend, dstart))
     } else if (fmt == "tm") {
         ## TODO
         yy <- floor(x / 12) + STATA.ORIGIN.Y
@@ -50,7 +49,7 @@ fromStataTime <- function(x, fmt, tz='') {
         dstart <- as.Date(paste(yy, 3 * qtr - 2, 1, sep='-'),
                                 format='%Y-%m-%d')
         dend <- as.Date(paste((qtr == 3) + yy,
-                              3 * ((qtr %% 4) + 1) - 2, 1, sep='-'))
+                              3 * ((qtr %% 4) + 1) - 2, 1, sep='-'), format='%Y-%m-%d')
         ret <- dstart + frac * as.numeric(difftime(dend, dstart))
     } else if (fmt == "th") {
         yy <- floor(x / 2) + STATA.ORIGIN.Y
@@ -59,10 +58,11 @@ fromStataTime <- function(x, fmt, tz='') {
         dstart <- as.Date(paste(yy, 6 * half - 5, 1, sep='-'),
                                 format='%Y-%m-%d')
         dend <- as.Date(paste(yy + (half == 2),
-                              6 * ((qtr %% 2) + 1) - 5, 1, sep='-'))
+                              6 * ((half %% 2) + 1) - 5, 1, sep='-'))
         ret <- dstart + frac * as.numeric(difftime(dend, dstart))
     } else if (fmt == "tg") {
-        ## general format. do nothing.
+        ## %tg is a generic time format, one not specifically associated with dates.
+        ## Since there is nothing for me to do, I just return the number.
         ret <- x
     }
     ret
