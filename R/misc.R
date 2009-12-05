@@ -1,6 +1,8 @@
 STATA.ORIGIN <- as.Date('1960-1-1')
+STATA.ORIGIN <- '1960-01-01'
+STATA.ORIGIN.Y <- 1960
 
-fromStataTime <- function(x, fmt) {
+fromStataTime <- function(x, fmt, tz='') {
 
     ## convert.times <- list(tc = "POSIXct",
     ##                       tC = "POSIXct",
@@ -10,34 +12,61 @@ fromStataTime <- function(x, fmt) {
 
     if (fmt %in% c("tc", "tC")) {
         ## posixlt uses seconds
-        z <- as.POSIXct(z / 1000, origin = STATA.ORIGIN, tz=tz)
+        ret <- as.POSIXct(x / 1000, origin = STATA.ORIGIN,
+                          format='%Y-%m-%d', tz=tz)
         if (fmt == "tc") {
             ## adjust for leap seconds
             ## subtract the number of leap seconds prior to that time.
             ## I think I need to do that iteratively.
-            z <- sapply(z, function(y) z - sum(z >= .leap.seconds))
+            ## ret <- sapply(ret, function(y) ret - sum(ret >= .leap.seconds))
         }
     } else if (fmt == "td") {
         ret <- as.Date( x, origin='1960-01-01')
     } else if (fmt == "tw") {
-        ## TODO. I need to figure out how Stata counts weeks.
-        ret <- 0 + STATA.ORIGIN
+        ## Stata uses a non-standard week format.
+        ## Jan 1 always starts week 1.
+        ## Jan 7 always starts week 2, etc.
+        ## There is no week 53; week 52 has more than 7 days.
+        yy <- floor(x / 52) + STATA.ORIGIN.Y
+        wk <- floor(x %% 52) + 1
+        frac <- (x %% 52) %% 1
+        dstart <- as.Date(paste(yy, 1, 1, sep='-')) + (wk - 1) * 7
+        dend <- (wk == 52) * as.numeric(as.Date(paste(yy + 1, 1, 1)) +
+                 (wk != 52) * as.numeric(as.Date(paste(yy, 1, 1, sep='-'))) + wk * 7))
+
     } else if (fmt == "tm") {
         ## TODO
-        ret <- 0 + STATA.ORIGIN
+        yy <- floor(x / 12) + STATA.ORIGIN.Y
+        mm <- floor(x %% 12) + 1
+        frac <- (x %% 12) %% 1
+        dstart <- as.Date(paste(yy, mm, 1, sep='-'))
+        dend <- as.Date(paste(ifelse(mm == 12, yy + 1, yy),
+                              ((mm %% 12) + 1), 1, sep='-'))
+        ret <- dstart + frac * as.numeric(difftime(dend, dstart))
     } else if (fmt == "tq") {
-        ## TODO
-        ret <- 0 + STATA.ORIGIN
+        yy <- floor(x / 4) + STATA.ORIGIN.Y
+        qtr <- floor(x %% 4) + 1
+        frac <- (x %% 4) %% 1
+        dstart <- as.Date(paste(yy, 3 * qtr - 2, 1, sep='-'),
+                                format='%Y-%m-%d')
+        dend <- as.Date(paste((qtr == 3) + yy,
+                              3 * ((qtr %% 4) + 1) - 2, 1, sep='-'))
+        ret <- dstart + frac * as.numeric(difftime(dend, dstart))
     } else if (fmt == "th") {
-        ## TODO
-        ret <- 0 + STATA.ORIGIN
+        yy <- floor(x / 2) + STATA.ORIGIN.Y
+        half <- floor(x %% 2) + 1
+        frac <- (x %% 2) %% 1
+        dstart <- as.Date(paste(yy, 6 * half - 5, 1, sep='-'),
+                                format='%Y-%m-%d')
+        dend <- as.Date(paste(yy + (half == 2),
+                              6 * ((qtr %% 2) + 1) - 5, 1, sep='-'))
+        ret <- dstart + frac * as.numeric(difftime(dend, dstart))
     } else if (fmt == "tg") {
         ## general format. do nothing.
         ret <- x
     }
     ret
 }
-
 
 asStataTime <- function(x, hasTc=TRUE) {
     ## TODO: unit tests. Do -1, 0, 1 for the relevant stata units
