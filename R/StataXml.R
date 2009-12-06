@@ -12,64 +12,80 @@
 ## TODO: use make.names and replace . with _ for data.frame names
 library(XML)
 
-## For non variable names, I just need to truncate.
-strtrunc <- function(x, n) {
-    tooLong <- (nchar(x) > n)
-    x[ tooLong ] <- substr(x[ tooLong ], 1, n)
-}
+## CONSTANTS
 
-## Ensure valid stata names
+## Origin date for Stata Date Variables
+ST.EPOCH <- as.Date("1960-01-01")
+ST.EPOCH.Y <- 1960
+
+## Length of variable label
+ST.LABELVAR <- 80L
+## length of data label
+ST.LABELDATA <- ST.LABELVAR
+## length of value label string
+ST.LABELVALSTR <- 32000L
+## Length of variable name
+ST.VARNAME <-32L
+## Length of value label name
+ST.LABELVALNAME <- ST.VARNAME
+# length of one characteristic
+ST.CHAR <- 67784L
+
+## Variable Type Limits and information
+ST.BYTE.BYTES <- 1L
+ST.BYTE.MIN <- -127L
+ST.BYTE.MAX <- 100L
+ST.INT.BYTES <- 2L
+ST.INT.MIN <- -32767L
+ST.INT.MAX <- 32740L
+ST.LONG.BYTES <- 4L
+ST.LONG.MIN <- -2147483647L
+ST.LONG.MAX <- 2147483620L
+
+ST.FLOAT.BYTES <- 4L
+ST.FLOAT.MIN <- -1.70141173319e+38
+ST.FLOAT.MAX <- 1.70141173319e+38
+
+ST.DOUBLE.BYTES <- 8L
+ST.DOUBLE.MIN <- -8.9884656743e+307
+ST.DOUBLE.MAX <- 8.9884656743e+307
+
+ST.STR.MAX <- 244L
+
+ST.TIMESTAMP <- "%d %b %Y %H:%M"
+ST.FILETYPE <- 1
+ST.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>\n'
+
+.convertUnderscores <- function(x) gsub(x, "_", ".")
+
+## Utility Functions for names and strings
 stataVarname <- function(x) {
     gsub("\\.", "_", abbreviate(make.names(x), 32L))
 }
 stataValLabelName <- function(...) stataVarname(...)
 
-stataVarLabel <- function(x) strtrunc(x, 80L)
-stataDataLabel <- function(...) stataVarLabel(...)
+stataVarLabel <- function(x) substr(x, 1, ST.LABELVAR)
 
-stataStr <- function(x) strtrunc(x, 244L)
-stataValLabelStr <- function(x) strtrunc(x, 32000L)
-stataCharStr <- function(x) strtrunc(x, 67748L)
+stataDataLabel <- function(x) substr(x, 1, ST.LABELDATA)
 
-## Origin date for Stata Date Variables
-STATA.EPOCH <- as.Date("1960-01-01")
+stataStr <- function(x) substr(x, 1, ST.STR.MAX)
 
-## From stata 10
-## help limits
-STATA.LIMITS <- list(## dataset sizes
-                     nobs = as.integer(c(small=1000, IC=2147483647, SE=2147483647)),
-                     varnum = as.integer(c(small=99, IC=2047, SE=32767)),  # number of variables
-                     datawidth= as.integer(c(small=200, IC=24564, SE=393192)),  # width of a dataset
-                     ## labels
-                     labeldata = 80L,  # dataset label
-                     labelvar = 80L,   # variable label
-                     labelvalstr = 32000L, # length of value label string
-                     labelvalname = 32L, # length of name of value label
-                     labelvalcodings = as.integer(c(small=1000, IC=65536, SE=65536)),
-                                        # number of codings within one value label
-                     ## Misc
-                     strvar = 244L,    # length of string variable
-                     varname = 32L,    # Length of variable name
-                     char = 67784L    # length of one characteristic
-                     )
+stataValLabelStr <- function(x) substr(x, 1, ST.LABELVALSTR)
 
-## help data_types
-STATA.DATATYPES <- list(## number of bytes, min, max
-                        byte=as.integer(c(1, -127, 100)),
-                        int=as.integer(c(2, -32767, 32740)),
-                        long=as.integer(c(4, -2147483647, 2147483620)),
-                        ## bytes, min, max, 10^-x (negative power of ten for closes to 0 without being 0)
-                        float=c(4, -1.70141173319e+38, 1.70141173319e+38, 38),
-                        double=c(8, -8.9884656743e+307, 8.9884656743e+307, 323),
-                        ## min, max number of bytes
-                        str=c(1L, 244L))
+stataCharStr <- function(x) substr(x, 1, ST.CHAR)
 
-STATA.TIMESTAMP.FMT <- "%d %b %Y %H:%M"
-STATA.FILETYPE <- 1
-STATA.XMLHEADER <- '<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>\n'
-.stataVersions <- c("114"="10", "113"="8")
+stataTypeToRClass <- function(x) {
+    stataTypeToRClasses <- list(byte="integer",
+                                int="integer",
+                                long="integer",
+                                float="numeric",
+                                double="numeric",
+                                ## all str1-str244
+                                str="character")
 
-.convertUnderscores <- function(x) gsub(x, "_", ".")
+    x[ grep("^str", x) ] <- "str"
+    sapply(x, function(y) stataTypeToRClasses[[y]])
+}
 
 .findStataMissings <- function(x, na.rm=TRUE) {
     ## if not a missing value then NA is returned
@@ -91,13 +107,6 @@ read.stataXml <- function(file,
 {
     doc <- xmlParse(file)
 
-    stataTypeToRClasses <- list(byte="integer",
-                            int="integer",
-                            long="integer",
-                            float="numeric",
-                            double="numeric",
-                            ## all str1-str244
-                            str="character")
     ## Header ##
 
     ## version of the dataset
@@ -110,9 +119,11 @@ read.stataXml <- function(file,
     nobs <- as.integer(xmlValue(getNodeSet(doc, "/dta/header/nobs[1]")[[1]]))
     datalabel <- xmlValue(getNodeSet(doc, "/dta/header/data_label[1]")[[1]])
     timestamp <- strptime(xmlValue(getNodeSet(doc, "/dta/header/time_stamp[1]")[[1]]),
-                          STATA.TIMESTAMP.FMT)
+                          ST.TIMESTAMP)
 
     ## Descriptors
+
+    ## Variable types
     typelist <- xpathSApply(doc, "/dta/descriptors/typelist/type", xmlValue)
     ## variable list
     varlist <- xpathSApply(doc, "/dta/descriptors/varlist/variable", xmlGetAttr, name="varname")
@@ -151,9 +162,7 @@ read.stataXml <- function(file,
     }
 
     ## Create R Class equivalents for Stata Types
-    colClasses <- typelist
-    colClasses[ grep("^str", typelist) ] <- "str"
-    colClasses <- sapply(colClasses, function(x) stataTypeToRClasses[[x]])
+    colClasses <- stataTypeToRclass(typelist)
 
     ## if types of missing values are stored initialize the list.
     if (missing.type) {
@@ -246,16 +255,23 @@ write.stataXml <- function(dataframe, file,
     } else {
         byteorder <- "HILO"
     }
-    filetye <- STATA.FILETYPE
+    filetye <- ST.FILETYPE
 
     ## Variables and Observations
     nvar <- ncol(dataframe)
     nobs <- nrow(dataframe)
 
-    ## list of variable names
+    ## Ensure dataframe names so that they are compatible with stata
+    names(dataframe) <- stataVarnames(names(dataframe))
+    ## Variable list
     varlist <- names(dataframe)
 
     ## Cleaning Data Frame
+    ## Truncate character variables at Stata max string length
+    charVars <- which(sapply(dataframe, is.character))
+    for (v in charVars) {
+        dataframe[[v]] <- substr(1, ST.STR.MAX)
+    }
 
     ## Factors and Generating a Value Label List if any
     valueLabels <- list()
@@ -289,30 +305,25 @@ write.stataXml <- function(dataframe, file,
     ## the characters.
     if (is.null(typelist)) {
         typelist <- sapply(dataframe, function(x) {
-            vartype <- class(x)[1]
-            if (vartype == "numeric") {
+            if (is.numeric(x)) {
                 if (double) {
                     ret <- "double"
                 } else {
                     ret <- "float"
                 }
-            } else if (vartype == "integer") {
+            } else if (is.integer(vartype)) {
                 xMin <- min(x, na.rm=TRUE)
                 xMax <- max(x, na.rm=TRUE)
-                if (xMin >= STATA.DATATYPES[["byte"]][2] &
-                    xMax <= STATA.DATATYPES[["byte"]][3])
-                {
+                if (xMin >= ST.BYTE.MIN & xMax <= ST.BYTE.MAX) {
                     ret <- "byte"
-                } else if (xMin >= STATA.DATATYPES[["int"]][2] &
-                           xMax <= STATA.DATATYPES[["int"]][3])
-                {
+                } else if (xMin >= ST.INT.MIN & xMax <= ST.INT.MAX) {
                     ret <- "int"
                 } else {
                     ret <- "long"
                 }
-            } else if (vartype == "character") {
-                maxstr <- min(max(nchar(x)), STATA.DATATYPES[["str"]][2])
-                ret <- paste("str", maxstr, sep="")
+            } else if (is.character(x)) {
+                ## strings should already be truncated to correct size
+                ret <- paste("str", max(nchar(x)), sep="")
             } else {
                 stop(vartype, "not supported.")
             }
@@ -333,7 +344,7 @@ write.stataXml <- function(dataframe, file,
                                  ## %9s for str1-str9
                                  ## %[10-244]s for str10-str244
                                  if (substr(x, 1, 3) == "str") {
-                                     dig <- substr(x, 4, nchar(x))
+                                     dig <- as.integer(substr(x, 4, nchar(x)))
                                      if ( dig <= 9) {
                                          fmt <- "%9s"
                                      } else {
@@ -347,8 +358,6 @@ write.stataXml <- function(dataframe, file,
                              })
     }
 
-    ## Ensuring correct Lengths
-
     ### Writing out xml
     z <- xmlTree()
     z$addTag("dta", close=FALSE)
@@ -360,7 +369,7 @@ write.stataXml <- function(dataframe, file,
     z$addTag("nvar", nvar)
     z$addTag("nobs", nobs)
     z$addTag("data_label", datalabel)
-    z$addTag("time_stamp", strftime(Sys.time(), STATA.TIMESTAMP.FMT))
+    z$addTag("time_stamp", strftime(Sys.time(), ST.TIMESTAMP))
     z$closeTag()
 
     ## Descriptors Start
@@ -450,7 +459,7 @@ write.stataXml <- function(dataframe, file,
     z$closeTag() #dta
 
     ## Prefix does not seem to work.
-    saveXML(z, file=file, indent=verbose, prefix=STATA.XMLHEADER)
+    saveXML(z, file=file, indent=verbose, prefix=ST.XMLHEADER)
 
 }
 
