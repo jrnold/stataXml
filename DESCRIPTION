@@ -1,0 +1,11 @@
+Package: stataXml
+Version: 0.1
+Date: 2009-12-05
+Title: Read and write Stata xml files.
+Depends: R (>= 2.6.0), XML
+Maintainer: Jeffrey Arnold <jeffrey.arnold@gmail.com>
+Author: Jeffrey Arnold <jeffrey.arnold@gmail.com>
+Description: Functions for reading and writing Stata dta xml files, i.e. 
+	     files saved/read by the xmlsave/xmluse commands.
+LazyLoad: yes
+License: GPL-3
