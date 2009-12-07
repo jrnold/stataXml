@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>
+<!DOCTYPE dta [
+	<!ELEMENT dta (header, descriptors,
+		variable_labels, expansion,
+		data, value_labels)>
+	<!ELEMENT header (ds_format, byteorder,
+		filetype, nvar, nobs, data_label,
+		time_stamp)>
+	<!ELEMENT ds_format (#PCDATA)>
+	<!ELEMENT byteorder (#PCDATA)>
+	<!ELEMENT filetype (#PCDATA)>
+	<!ELEMENT nvar (#PCDATA)>
+	<!ELEMENT nobs (#PCDATA)>
+	<!ELEMENT data_label (#PCDATA)>
+	<!ELEMENT time_stamp (#PCDATA)>
+	<!ELEMENT descriptors (typelist, varlist,
+		srtlist, fmtlist, lbllist)>
+	<!ELEMENT typelist (type)+>
+	<!ELEMENT type (#PCDATA)>
+	<!ATTLIST type varname IDREF #REQUIRED>
+	<!ELEMENT varlist (variable)+>
+	<!ELEMENT variable EMPTY>
+	<!ATTLIST variable varname ID #REQUIRED>
+	<!ELEMENT srtlist (sort)*>
+	<!ELEMENT sort EMPTY>
+	<!ATTLIST sort varname IDREF #REQUIRED>
+	<!ELEMENT fmtlist (fmt)+>
+	<!ELEMENT fmt (#PCDATA)>
+	<!ATTLIST fmt varname IDREF #REQUIRED>
+	<!ELEMENT lbllist (lblname)*>
+	<!ELEMENT lblname (#PCDATA)>
+	<!ATTLIST lblname varname IDREF #REQUIRED>
+	<!ELEMENT variable_labels (vlabel)*>
+	<!ELEMENT vlabel (#PCDATA)>
+	<!ATTLIST vlabel varname IDREF #REQUIRED>
+	<!ELEMENT expansion (char)*>
+	<!ELEMENT char (#PCDATA)>
+	<!ATTLIST char name  NMTOKEN #REQUIRED>
+	<!ATTLIST char vname NMTOKEN #REQUIRED>
+	<!ELEMENT data (o)*>
+	<!ELEMENT o (v)*>
+	<!ATTLIST o num NMTOKEN #IMPLIED>
+	<!ELEMENT v (#PCDATA)*>
+	<!ATTLIST v varname IDREF #IMPLIED>
+	<!ELEMENT value_labels (vallab)*>
+	<!ELEMENT vallab (label)+>
+	<!ATTLIST vallab name  NMTOKEN #REQUIRED>
+	<!ELEMENT label (#PCDATA)>
+	<!ATTLIST label value NMTOKEN #REQUIRED>
+]>
+<dta>
+	<header>
+		<ds_format>113</ds_format>
+		<byteorder>LOHI</byteorder>
+		<filetype>1</filetype>
+		<nvar>7</nvar>
+		<nobs>5</nobs>
+		<data_label>test data label</data_label>
+		<time_stamp>7 Dec 2009 15:59</time_stamp>
+	</header>
+	<descriptors>
+		<typelist>
+			<type varname='vbyte'>byte</type>
+			<type varname='vint'>int</type>
+			<type varname='vlong'>long</type>
+			<type varname='vfloat'>float</type>
+			<type varname='vdouble'>double</type>
+			<type varname='vstr'>str1</type>
+			<type varname='vlabel'>byte</type>
+		</typelist>
+		<varlist>
+			<variable varname='vbyte'/>
+			<variable varname='vint'/>
+			<variable varname='vlong'/>
+			<variable varname='vfloat'/>
+			<variable varname='vdouble'/>
+			<variable varname='vstr'/>
+			<variable varname='vlabel'/>
+		</varlist>
+		<srtlist>
+			<sort varname='vbyte'/>
+			<sort varname='vint'/>
+		</srtlist>
+		<fmtlist>
+			<fmt varname='vbyte'>%8.0g</fmt>
+			<fmt varname='vint'>%8.0g</fmt>
+			<fmt varname='vlong'>%12.0g</fmt>
+			<fmt varname='vfloat'>%9.0g</fmt>
+			<fmt varname='vdouble'>%10.0g</fmt>
+			<fmt varname='vstr'>%9s</fmt>
+			<fmt varname='vlabel'>%8.0g</fmt>
+		</fmtlist>
+		<lbllist>
+			<lblname varname='vbyte'></lblname>
+			<lblname varname='vint'></lblname>
+			<lblname varname='vlong'></lblname>
+			<lblname varname='vfloat'></lblname>
+			<lblname varname='vdouble'></lblname>
+			<lblname varname='vstr'></lblname>
+			<lblname varname='vlabel'>alpha</lblname>
+		</lbllist>
+	</descriptors>
+	<variable_labels>
+		<vlabel varname='vbyte'>byte variable</vlabel>
+		<vlabel varname='vint'>int variable</vlabel>
+		<vlabel varname='vlong'>long variable</vlabel>
+		<vlabel varname='vfloat'>float variable</vlabel>
+		<vlabel varname='vdouble'>double variable</vlabel>
+		<vlabel varname='vstr'>string variable</vlabel>
+		<vlabel varname='vlabel'>variable with labels</vlabel>
+	</variable_labels>
+	<expansion>
+		<char name='note1' vname='vbyte'>1st vbyte note</char>
+		<char name='note0' vname='vbyte'>1</char>
+		<char name='note1' vname='_dta'>1st data note</char>
+		<char name='note0' vname='_dta'>1</char>
+	</expansion>
+	<data>
+		<o num='1'>
+			<v varname='vbyte'>1</v>
+			<v varname='vint'>1</v>
+			<v varname='vlong'>1</v>
+			<v varname='vfloat'>1.000000000000000</v>
+			<v varname='vdouble'>1.0000000000000000000000000</v>
+			<v varname='vstr'>a</v>
+			<v varname='vlabel'>1</v>
+		</o>
+		<o num='2'>
+			<v varname='vbyte'>2</v>
+			<v varname='vint'>2</v>
+			<v varname='vlong'>2</v>
+			<v varname='vfloat'>2.000000000000000</v>
+			<v varname='vdouble'>2.0000000000000000000000000</v>
+			<v varname='vstr'>b</v>
+			<v varname='vlabel'>2</v>
+		</o>
+		<o num='3'>
+			<v varname='vbyte'>3</v>
+			<v varname='vint'>3</v>
+			<v varname='vlong'>3</v>
+			<v varname='vfloat'>3.000000000000000</v>
+			<v varname='vdouble'>3.0000000000000000000000000</v>
+			<v varname='vstr'>c</v>
+			<v varname='vlabel'>3</v>
+		</o>
+		<o num='4'>
+			<v varname='vbyte'>4</v>
+			<v varname='vint'>4</v>
+			<v varname='vlong'>4</v>
+			<v varname='vfloat'>4.000000000000000</v>
+			<v varname='vdouble'>4.0000000000000000000000000</v>
+			<v varname='vstr'>d</v>
+			<v varname='vlabel'>4</v>
+		</o>
+		<o num='5'>
+			<v varname='vbyte'>5</v>
+			<v varname='vint'>5</v>
+			<v varname='vlong'>5</v>
+			<v varname='vfloat'>5.000000000000000</v>
+			<v varname='vdouble'>5.0000000000000000000000000</v>
+			<v varname='vstr'>e</v>
+			<v varname='vlabel'>5</v>
+		</o>
+	</data>
+	<value_labels>
+		<vallab name='alpha'>
+			<label value='1'>a</label>
+			<label value='2'>b</label>
+			<label value='3'>c</label>
+			<label value='4'>d</label>
+			<label value='5'>e</label>
+		</vallab>
+	</value_labels>
+</dta>

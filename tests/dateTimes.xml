@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="yes"?>
+<!DOCTYPE dta [
+<!ELEMENT dta (header, descriptors,
+variable_labels, expansion,
+data, value_labels)>
+<!ELEMENT header (ds_format, byteorder,
+filetype, nvar, nobs, data_label,
+time_stamp)>
+<!ELEMENT ds_format (#PCDATA)>
+<!ELEMENT byteorder (#PCDATA)>
+<!ELEMENT filetype (#PCDATA)>
+<!ELEMENT nvar (#PCDATA)>
+<!ELEMENT nobs (#PCDATA)>
+<!ELEMENT data_label (#PCDATA)>
+<!ELEMENT time_stamp (#PCDATA)>
+<!ELEMENT descriptors (typelist, varlist,
+srtlist, fmtlist, lbllist)>
+<!ELEMENT typelist (type)+>
+<!ELEMENT type (#PCDATA)>
+<!ATTLIST type varname IDREF #REQUIRED>
+<!ELEMENT varlist (variable)+>
+<!ELEMENT variable EMPTY>
+<!ATTLIST variable varname ID #REQUIRED>
+<!ELEMENT srtlist (sort)*>
+<!ELEMENT sort EMPTY>
+<!ATTLIST sort varname IDREF #REQUIRED>
+<!ELEMENT fmtlist (fmt)+>
+<!ELEMENT fmt (#PCDATA)>
+<!ATTLIST fmt varname IDREF #REQUIRED>
+<!ELEMENT lbllist (lblname)*>
+<!ELEMENT lblname (#PCDATA)>
+<!ATTLIST lblname varname IDREF #REQUIRED>
+<!ELEMENT variable_labels (vlabel)*>
+<!ELEMENT vlabel (#PCDATA)>
+<!ATTLIST vlabel varname IDREF #REQUIRED>
+<!ELEMENT expansion (char)*>
+<!ELEMENT char (#PCDATA)>
+<!ATTLIST char name  NMTOKEN #REQUIRED>
+<!ATTLIST char vname NMTOKEN #REQUIRED>
+<!ELEMENT data (o)*>
+<!ELEMENT o (v)*>
+<!ATTLIST o num NMTOKEN #IMPLIED>
+<!ELEMENT v (#PCDATA)*>
+<!ATTLIST v varname IDREF #IMPLIED>
+<!ELEMENT value_labels (vallab)*>
+<!ELEMENT vallab (label)+>
+<!ATTLIST vallab name  NMTOKEN #REQUIRED>
+<!ELEMENT label (#PCDATA)>
+<!ATTLIST label value NMTOKEN #REQUIRED>
+]>
+<dta>
+<header>
+<ds_format>113</ds_format>
+<byteorder>LOHI</byteorder>
+<filetype>1</filetype>
+<nvar>8</nvar>
+<nobs>3</nobs>
+<data_label></data_label>
+<time_stamp>7 Dec 2009 16:06</time_stamp>
+</header>
+<descriptors>
+<typelist>
+<type varname='tc'>int</type>
+<type varname='tC'>int</type>
+<type varname='td'>int</type>
+<type varname='tw'>int</type>
+<type varname='tm'>int</type>
+<type varname='tq'>int</type>
+<type varname='th'>int</type>
+<type varname='tg'>int</type>
+</typelist>
+<varlist>
+<variable varname='tc'/>
+<variable varname='tC'/>
+<variable varname='td'/>
+<variable varname='tw'/>
+<variable varname='tm'/>
+<variable varname='tq'/>
+<variable varname='th'/>
+<variable varname='tg'/>
+</varlist>
+<srtlist>
+</srtlist>
+<fmtlist>
+<fmt varname='tc'>%tc</fmt>
+<fmt varname='tC'>%tC</fmt>
+<fmt varname='td'>%td</fmt>
+<fmt varname='tw'>%tw</fmt>
+<fmt varname='tm'>%tm</fmt>
+<fmt varname='tq'>%tq</fmt>
+<fmt varname='th'>%th</fmt>
+<fmt varname='tg'>%tg</fmt>
+</fmtlist>
+<lbllist>
+<lblname varname='tc'></lblname>
+<lblname varname='tC'></lblname>
+<lblname varname='td'></lblname>
+<lblname varname='tw'></lblname>
+<lblname varname='tm'></lblname>
+<lblname varname='tq'></lblname>
+<lblname varname='th'></lblname>
+<lblname varname='tg'></lblname>
+</lbllist>
+</descriptors>
+<variable_labels>
+<vlabel varname='tc'></vlabel>
+<vlabel varname='tC'></vlabel>
+<vlabel varname='td'></vlabel>
+<vlabel varname='tw'></vlabel>
+<vlabel varname='tm'></vlabel>
+<vlabel varname='tq'></vlabel>
+<vlabel varname='th'></vlabel>
+<vlabel varname='tg'></vlabel>
+</variable_labels>
+<expansion>
+</expansion>
+<data>
+<o>
+<v>-1</v>
+<v>-1</v>
+<v>-1</v>
+<v>-1</v>
+<v>-1</v>
+<v>-1</v>
+<v>-1</v>
+<v>-1</v>
+</o>
+<o>
+<v>0</v>
+<v>0</v>
+<v>0</v>
+<v>0</v>
+<v>0</v>
+<v>0</v>
+<v>0</v>
+<v>0</v>
+</o>
+<o>
+<v>1</v>
+<v>1</v>
+<v>1</v>
+<v>1</v>
+<v>1</v>
+<v>1</v>
+<v>1</v>
+<v>1</v>
+</o>
+</data>
+<value_labels>
+</value_labels>
+</dta>
