@@ -1,18 +1,10 @@
-## TODO:
-## ensure strings, names, factor names are the correct size.
-## convert dates
-## What a stata file consists of
-## header
-## descriptors ( variable names, formats, types, sortlist)
-## variable_labels
-## data
-## value_label table
-## My goal: Do everything in R, except the writing.
-## writing can go to either xml or binary.
-## TODO: use make.names and replace . with _ for data.frame names
 library(XML)
-
 ## CONSTANTS
+
+## Classes that can be converted to Stata dates and times by asStataTime
+DATETIME.CLASSES <- c("Date", 'dates', 'times', 'POSIXlt', 'POSIXct',
+                      'yearqtr', 'yearmon')
+
 
 ## Origin date for Stata Date Variables
 ST.EPOCH <- as.Date("1960-01-01")
@@ -207,7 +199,16 @@ read.stataXml <- function(file,
     }
     rm(var)
 
-    ## Convert underscores
+    ## Post processing
+    ## Dates
+    if (convert.dates) {
+        for (i in grep('^%t[cCdwmqh]', fmtlist)) {
+            fmt <- substr(fmtlist[i], 2, 3)
+            dataframe[[i]] <- fromStataVar(dataframe[[i]], fmt)
+        }
+    }
+
+    ## Convert underscores in variable names
     if (convert.underscore)  {
         names(res) <- .convertUnderscores(names(res))
     }
@@ -261,21 +262,27 @@ write.stataXml <- function(dataframe, file,
     nvar <- ncol(dataframe)
     nobs <- nrow(dataframe)
 
+    ## Dataset label
+    datalabel <- stataDataLabel(datalabel)
+
+    ## Variable List
     ## Ensure dataframe names so that they are compatible with stata
     names(dataframe) <- stataVarnames(names(dataframe))
     ## Variable list
     varlist <- names(dataframe)
 
-    ## Cleaning Data Frame
-    ## Truncate character variables at Stata max string length
-    charVars <- which(sapply(dataframe, is.character))
-    for (v in charVars) {
-        dataframe[[v]] <- substr(1, ST.STR.MAX)
+    ## Value Labels
+    if (! convert.factors %in% c('string', 'numeric', 'codes')) {
+        ## List with an entry for every variable
+        ## non-factor variables will have NULL as their element
+        valueLabels <- lapply(dataframe,
+                              function(x) {
+                                  stataValLabelStr(levels(x))
+                              })
     }
 
-    ## Factors and Generating a Value Label List if any
-    valueLabels <- list()
-
+    ## Cleaning Data Frame ###
+    ## converting factors
     factors <- which(sapply(dataframe, is.factor))
     for(v in factors) {
         if(convert.factors == "string") {
@@ -285,12 +292,20 @@ write.stataXml <- function(dataframe, file,
         } else if (convert.factors == "codes") {
             dataframe[[v]] <- as.integer(dataframe[[v]])
         } else {
-            ## We keep the factors and treat them as values.
-
-            lblname <- names(dataframe)[v]
-            valueLabels[[lblname]] <- levels(dataframe[[v]])
-
             dataframe[[v]] <- as.integer(dataframe[[v]])
+        }
+    }
+
+    ## Truncate character variables at Stata max string length
+    strVars <- which(sapply(dataframe, is.character))
+    for (v in strVars) {
+        dataframe[[v]] <- stataStr(dataframe[[v]])
+    }
+
+    ## Convert DateTime variables
+    for ( i in seq_along(dataframe)) {
+        if (class(dataframe[[i]]) %in% DATETIME.CLASSES) {
+            dataframe[[i]] <- asStataTime(dataframe[[i]])
         }
     }
 
@@ -329,6 +344,7 @@ write.stataXml <- function(dataframe, file,
             }
             ret
         })
+        names(typelist) <- varlist
     }
 
     ## Variable Display Formats
@@ -356,6 +372,11 @@ write.stataXml <- function(dataframe, file,
                                      stop("cannot find a format for type", x)
                                  }
                              })
+        ## Overwrite defaults for datetime variables
+        fmtlist <- mapply(function(x, y) if (is.null(x)) y else x,
+                          sapply(dataframe, function(x) attr(x, 'stata.time'))
+                          fmtlist)
+        names(fmtlist) <- varlist
     }
 
     ### Writing out xml
@@ -446,8 +467,10 @@ write.stataXml <- function(dataframe, file,
     }
     z$closeTag()
 
+    ## Value Labels
     z$addTag("value_labels", close=FALSE)
-    for (vallab in names(valueLabels)) {
+    nonNullLabels <- names(valueLabels)[ ! sapply(valueLabels, is.null) ]
+    for (vallab in nonNullLabels) {
         z$addTag("vallab", attrs=c('name'=vallab), close=FALSE)
         for ( i  in seq_along(valueLabels[[vallab]])) {
             z$addTag('label', valueLabels[[vallab]][i],  attrs=c('value'=i))
@@ -456,6 +479,7 @@ write.stataXml <- function(dataframe, file,
     }
     z$closeTag() # value_labels
 
+    ## End of dta file
     z$closeTag() #dta
 
     ## Prefix does not seem to work.

@@ -2,7 +2,7 @@ Package: stataXml
 Version: 0.1
 Date: 2009-12-05
 Title: Read and write Stata xml files.
-Depends: R (>= 2.6.0), XML
+Depends: R (>= 2.6.0), XML, svUnit
 Maintainer: Jeffrey Arnold <jeffrey.arnold@gmail.com>
 Author: Jeffrey Arnold <jeffrey.arnold@gmail.com>
 Description: Functions for reading and writing Stata dta xml files, i.e. 

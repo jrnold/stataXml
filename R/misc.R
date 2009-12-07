@@ -1,4 +1,3 @@
-STATA.ORIGIN <- as.Date('1960-1-1')
 STATA.ORIGIN <- '1960-01-01'
 STATA.ORIGIN.Y <- 1960
 
@@ -14,11 +13,13 @@ fromStataTime <- function(x, fmt, tz='') {
         ## posixlt uses seconds
         ret <- as.POSIXct(x / 1000, origin = STATA.ORIGIN,
                           format='%Y-%m-%d', tz=tz)
-        if (fmt == "tc") {
+        if (fmt == "tC") {
             ## adjust for leap seconds
             ## subtract the number of leap seconds prior to that time.
-            ## I think I need to do that iteratively.
-            ## ret <- sapply(ret, function(y) ret - sum(ret >= .leap.seconds))
+            lpSec <- .leap.seconds + seq_along(.leap.seconds)
+            adjust <- cut(as.numeric(ret), breaks=c(-Inf, lpSec, Inf),
+                          right=TRUE, include.lowest=TRUE, labels=FALSE) - 1
+            ret <- ret - adjust
         }
     } else if (fmt == "td") {
         ret <- as.Date( x, origin='1960-01-01')
@@ -68,10 +69,8 @@ fromStataTime <- function(x, fmt, tz='') {
     ret
 }
 
-asStataTime <- function(x, hasTc=TRUE) {
-    ## TODO: unit tests. Do -1, 0, 1 for the relevant stata units
+asStataTime <- function(x, useTc=TRUE) {
     ## TODO: handle packages tis, ts, and timeDate
-
 
     if ( any(c(is(x, "Date"), is(x, 'dates'), is(x, 'times') ))) {
         ## Date class in base
@@ -79,7 +78,7 @@ asStataTime <- function(x, hasTc=TRUE) {
         y <- as.numeric(x) - as.numeric(STATA.ORIGIN)
         attr(y, 'stata.format') <- '%td'
     } else if (any(c(is(x, "POSIXlt"), is(x, "POSIXct"), is(x, 'POSIXt')))) {
-        if (hasTc) {
+        if (useTc) {
             ## POSIXct is number of seconds since 1970
             ## %tc is number of miliseconds since 1960
             ## R ignores leap seconds as per POSIX, so I will convert to %tc and not %tC
@@ -109,10 +108,12 @@ asStataTime <- function(x, hasTc=TRUE) {
     } else {
         ## I don't know what to do with other stuff.
         ## option 1. Treat as dates.
-        ## optino 2, use %tg
+        ## option 2, use %tg
         y <- as.numeric(x)
         attr(y, 'stata.format') <- '%tg'
     }
     ##attr(y, 'class') <- 'stataTime'
     y
 }
+
+lpSec <- .leap.seconds + seq_along(.leap.seconds)
