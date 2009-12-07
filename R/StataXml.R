@@ -66,7 +66,7 @@ stataValLabelStr <- function(x) substr(x, 1, ST.LABELVALSTR)
 
 stataCharStr <- function(x) substr(x, 1, ST.CHAR)
 
-stataTypeToRClass <- function(x) {
+stataTypeToRclass <- function(x) {
     stataTypeToRClasses <- list(byte="integer",
                                 int="integer",
                                 long="integer",
@@ -93,6 +93,7 @@ stataTypeToRClass <- function(x) {
 }
 
 read.stataXml <- function(file,
+                          convert.dates=FALSE,
                           convert.factors=TRUE,
                           convert.underscore=FALSE,
                           missing.type=TRUE)
@@ -267,7 +268,7 @@ write.stataXml <- function(dataframe, file,
 
     ## Variable List
     ## Ensure dataframe names so that they are compatible with stata
-    names(dataframe) <- stataVarnames(names(dataframe))
+    names(dataframe) <- stataVarname(names(dataframe))
     ## Variable list
     varlist <- names(dataframe)
 
@@ -279,7 +280,10 @@ write.stataXml <- function(dataframe, file,
                               function(x) {
                                   stataValLabelStr(levels(x))
                               })
+        ## Keep only defined values
+        valueLabels <- valueLabels[ sapply(valueLabels, function(x) length(x) > 0) ]
     }
+
 
     ## Cleaning Data Frame ###
     ## converting factors
@@ -320,13 +324,9 @@ write.stataXml <- function(dataframe, file,
     ## the characters.
     if (is.null(typelist)) {
         typelist <- sapply(dataframe, function(x) {
-            if (is.numeric(x)) {
-                if (double) {
-                    ret <- "double"
-                } else {
-                    ret <- "float"
-                }
-            } else if (is.integer(vartype)) {
+            if (is.logical(x)) {
+                ret <- "byte"
+            } else if (is.integer(x)) {
                 xMin <- min(x, na.rm=TRUE)
                 xMax <- max(x, na.rm=TRUE)
                 if (xMin >= ST.BYTE.MIN & xMax <= ST.BYTE.MAX) {
@@ -335,6 +335,12 @@ write.stataXml <- function(dataframe, file,
                     ret <- "int"
                 } else {
                     ret <- "long"
+                }
+            } else  if (is.numeric(x)) {
+                if (double) {
+                    ret <- "double"
+                } else {
+                    ret <- "float"
                 }
             } else if (is.character(x)) {
                 ## strings should already be truncated to correct size
@@ -374,10 +380,14 @@ write.stataXml <- function(dataframe, file,
                              })
         ## Overwrite defaults for datetime variables
         fmtlist <- mapply(function(x, y) if (is.null(x)) y else x,
-                          sapply(dataframe, function(x) attr(x, 'stata.time'))
+                          sapply(dataframe, function(x) attr(x, 'stata.time')),
                           fmtlist)
         names(fmtlist) <- varlist
     }
+
+    ## Value Label List
+    lbllist <- sapply(varlist, function(x) if (x %in% names(valueLabels)) x else "",
+                      USE.NAMES=TRUE)
 
     ### Writing out xml
     z <- xmlTree()
@@ -395,10 +405,12 @@ write.stataXml <- function(dataframe, file,
 
     ## Descriptors Start
     z$addTag("descriptors", close=FALSE)
+
     ## Type List
     z$addTag("typelist", close=FALSE)
     for (i in seq_along(typelist)) {
-        z$addTag("type", typelist[i], attrs=c("varname"=varlist[i]))
+        var <- varlist[i]
+        z$addTag("type", typelist[i], attrs=c("varname"=var))
     }
     z$closeTag()
 
@@ -407,14 +419,14 @@ write.stataXml <- function(dataframe, file,
     for (x in varlist) {
         z$addTag("variable", attrs=c("varname"=x))
     }
-    z$closeTag()
+    z$closeTag() ## varlist
 
     ## sortlist
     z$addTag("srtlist", close=FALSE)
     for (x in sortlist) {
         z$addTag("sort", attrs=c('varname'=x))
     }
-    z$closeTag()
+    z$closeTag() ## srtlist
 
     ## Format List
     z$addTag("fmtlist", close=FALSE)
@@ -422,13 +434,22 @@ write.stataXml <- function(dataframe, file,
         var = varlist[i]
         z$addTag("fmt", fmtlist[i], attrs=c("varname"=var))
     }
-    z$closeTag()
+    z$closeTag() ## fmtlist
 
-    ## End Descriptors
-    z$closeTag()
+    ## Value Label List
+    z$addTag("lbllist", close=FALSE)
+    for (i in seq_along(lbllist)) {
+        var = varlist[i]
+        z$addTag("lblname", lbllist[i], attrs=c("varname"=var))
+    }
+    z$closeTag() ## lbllist
+
+    ##  Descriptors end
+    z$closeTag() ## descriptors
+
 
     ## Variable Labels
-    z$addTag("variable_labels")
+    z$addTag("variable_labels", close=FALSE)
     for (i in seq_along(varlist)) {
         z$addTag("vlabel", variableLabels[i], attrs=c("varname"=varlist[i]))
     }
