@@ -301,7 +301,8 @@ write.stataXml <- function(dataframe, file,
     }
 
     ## Truncate character variables at Stata max string length
-    strVars <- which(sapply(dataframe, is.character))
+    strVars <- which(sapply(dataframe,
+                            function(x) is.character(x) & max(nchar(x)) > ST.STR.MAX))
     for (v in strVars) {
         dataframe[[v]] <- stataStr(dataframe[[v]])
     }
@@ -357,7 +358,7 @@ write.stataXml <- function(dataframe, file,
     if (is.null(fmtlist)) {
         default.formats <- list(byte = "%8.0g",
                                 int = "%8.0g",
-                                long = "%8.0g",
+                                long = "%12.0g",
                                 float = "%9.0g",
                                 double = "%10.0g")
         fmtlist <- sapply(typelist,
