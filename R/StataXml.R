@@ -93,7 +93,7 @@ stataTypeToRclass <- function(x) {
 }
 
 read.stataXml <- function(file,
-                          convert.dates=FALSE,
+                          convert.dates=TRUE,
                           convert.factors=TRUE,
                           convert.underscore=FALSE,
                           missing.type=TRUE)
@@ -142,6 +142,8 @@ read.stataXml <- function(file,
         charname <- xmlGetAttr(node, name="name")
         char[[ c(vname, charname) ]] <- xmlValue(node)
     }
+    ## coerce list of lists to a list of character vectors
+    char <- lapply(char, unlist)
 
     ## Value Labels
     valueLabels <- getNodeSet(doc, "/dta/value_labels/vallab")
@@ -163,7 +165,7 @@ read.stataXml <- function(file,
     }
 
     ## Parse Data
-    res <- data.frame( row.names=as.character(1:nobs))
+    df <- data.frame( row.names=as.character(1:nobs))
     for ( j in seq_along(varlist)) {
         x <- varlist[j]
         var <- xpathSApply(doc, "//o", function(obs, j) xmlValue(obs[[j]]), j=j)
@@ -195,7 +197,7 @@ read.stataXml <- function(file,
                               labels=names(vallab[[ lbl ]]),
                               levels=vallab[[ lbl ]])
             }
-            res[[x]] <- var
+            df[[x]] <- var
         }
     }
     rm(var)
@@ -205,36 +207,36 @@ read.stataXml <- function(file,
     if (convert.dates) {
         for (i in grep('^%t[cCdwmqh]', fmtlist)) {
             fmt <- substr(fmtlist[i], 2, 3)
-            dataframe[[i]] <- fromStataVar(dataframe[[i]], fmt)
+            df[[i]] <- fromStataTime(df[[i]], fmt)
         }
     }
 
     ## Convert underscores in variable names
     if (convert.underscore)  {
-        names(res) <- .convertUnderscores(names(res))
+        names(df) <- .convertUnderscores(names(df))
     }
 
     ## Add attributes
-    attr(res, "version") <- ds_format
-    attr(res, "time.stamp") <- timestamp
-    attr(res, "datalabel") <- datalabel
-    attr(res, "formats") <- fmtlist
-    attr(res, "types") <- typelist
-    attr(res, "val.labels") <- lbllist
-    attr(res, "var.labels") <- vlabels
-    attr(res, "sort") <- srtlist
-    attr(res, "char") <- char
-    attr(res, "label.table") <- vallab
-    attr(res, "dta_type") <- "xml"
+    attr(df, "version") <- ds_format
+    attr(df, "time.stamp") <- timestamp
+    attr(df, "datalabel") <- datalabel
+    attr(df, "formats") <- fmtlist
+    attr(df, "types") <- typelist
+    attr(df, "val.labels") <- lbllist
+    attr(df, "var.labels") <- vlabels
+    attr(df, "sort") <- srtlist
+    attr(df, "char") <- char
+    attr(df, "label.table") <- vallab
+    attr(df, "dta_type") <- "xml"
     if (missing.type) {
-        attr(res, "missing") <- missingValues
+        attr(df, "missing") <- missingValues
     }
 
     ## Free up memory
     free(doc)
 
     ## Return new dataframe
-    res
+    df
 }
 
 write.stataXml <- function(dataframe, file,
@@ -282,8 +284,9 @@ write.stataXml <- function(dataframe, file,
                               })
         ## Keep only defined values
         valueLabels <- valueLabels[ sapply(valueLabels, function(x) length(x) > 0) ]
+    } else {
+        valueLabels <- list()
     }
-
 
     ## Cleaning Data Frame ###
     ## converting factors
@@ -307,10 +310,16 @@ write.stataXml <- function(dataframe, file,
         dataframe[[v]] <- stataStr(dataframe[[v]])
     }
 
+    ## Convert logical variables to integer
+    logicalVars <- which(sapply(dataframe, is.logical))
+    for (v in logicalVars) {
+        dataframe[[v]] <- as.integer(dataframe[[v]])
+    }
+
     ## Convert DateTime variables
-    for ( i in seq_along(dataframe)) {
-        if (class(dataframe[[i]]) %in% DATETIME.CLASSES) {
-            dataframe[[i]] <- asStataTime(dataframe[[i]])
+    for (v in seq_along(dataframe)) {
+        if (class(dataframe[[v]]) %in% DATETIME.CLASSES) {
+            dataframe[[v]] <- asStataTime(dataframe[[v]])
         }
     }
 
@@ -325,17 +334,19 @@ write.stataXml <- function(dataframe, file,
     ## the characters.
     if (is.null(typelist)) {
         typelist <- sapply(dataframe, function(x) {
-            if (is.logical(x)) {
-                ret <- "byte"
-            } else if (is.integer(x)) {
-                xMin <- min(x, na.rm=TRUE)
-                xMax <- max(x, na.rm=TRUE)
-                if (xMin >= ST.BYTE.MIN & xMax <= ST.BYTE.MAX) {
-                    ret <- "byte"
-                } else if (xMin >= ST.INT.MIN & xMax <= ST.INT.MAX) {
-                    ret <- "int"
+            if (is.integer(x)) {
+                if (all(is.na(x))) {
+                    ret <- 'byte'
                 } else {
-                    ret <- "long"
+                    xMin <- min(x, na.rm=TRUE)
+                    xMax <- max(x, na.rm=TRUE)
+                    if (xMin >= ST.BYTE.MIN & xMax <= ST.BYTE.MAX) {
+                        ret <- "byte"
+                    } else if (xMin >= ST.INT.MIN & xMax <= ST.INT.MAX) {
+                        ret <- "int"
+                    } else {
+                        ret <- "long"
+                    }
                 }
             } else  if (is.numeric(x)) {
                 if (double) {
@@ -492,7 +503,9 @@ write.stataXml <- function(dataframe, file,
     ## Value Labels
     z$addTag("value_labels", close=FALSE)
     nonNullLabels <- names(valueLabels)[ ! sapply(valueLabels, is.null) ]
+    browser()
     for (vallab in nonNullLabels) {
+        browser()
         z$addTag("vallab", attrs=c('name'=vallab), close=FALSE)
         for ( i  in seq_along(valueLabels[[vallab]])) {
             z$addTag('label', valueLabels[[vallab]][i],  attrs=c('value'=i))
