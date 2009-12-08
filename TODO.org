@@ -1,4 +1,6 @@
 * TODO man pages
 * TODO fix empty xml tree warning.
 * TODO handle writing numeric missing values ("." instead of "NA")
-* TODO unit tests / tests for reading and writing.
+* TODO unit tests / tests for reading and writing. 
+** TODO date/times for write.stataXml
+** TODO missing values for write.stataXml
