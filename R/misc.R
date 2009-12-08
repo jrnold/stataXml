@@ -75,7 +75,7 @@ asStataTime <- function(x, useTc=TRUE) {
     if ( any(c(is(x, "Date"), is(x, 'dates'), is(x, 'times') ))) {
         ## Date class in base
         ## dates, times classes from chron
-        y <- as.numeric(x) - as.numeric(STATA.ORIGIN)
+        y <- as.numeric(x) - as.numeric(as.Date(STATA.ORIGIN))
         attr(y, 'stata.format') <- '%td'
     } else if (any(c(is(x, "POSIXlt"), is(x, "POSIXct"), is(x, 'POSIXt')))) {
         if (useTc) {
@@ -83,14 +83,14 @@ asStataTime <- function(x, useTc=TRUE) {
             ## %tc is number of miliseconds since 1960
             ## R ignores leap seconds as per POSIX, so I will convert to %tc and not %tC
             ## as.double unlike as as.POSIXct keeps the fractional seconds
-            y <- unclass(as.double(x))
+            y <- unclass(as.double(x)) * 1000
             ## I round to fix floating point errors
-            y <- round((y - as.numeric(STATA.ORIGIN) * 86400) * 1000)
+            y <- round(y - as.numeric(as.Date(STATA.ORIGIN)) * 86400 * 1000)
             attr(y, 'stata.format') <- '%tc'
         } else {
             ## If an older version of stata that doesn't support %tc (version < 10)
             ## Then convert to %td (dates)
-            y <- as.numeric(as.Date(x)) - as.numeric(STATA.ORIGIN)
+            y <- as.numeric(as.Date(x)) - as.numeric(as.Date(STATA.ORIGIN))
             attr(y, 'stata.format') <- '%td'
         }
     } else if (is(x, 'yearqtr')) {

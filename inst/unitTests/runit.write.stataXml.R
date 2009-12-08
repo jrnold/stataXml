@@ -122,3 +122,48 @@ test(write.stataXml) <- function() {
     bar2 <- read.stataXml(tmpfn6)
     checkIdentical(bar, bar2)
 }
+
+test.write.stataXml.dates <- function() {
+    require(zoo)
+    require(chron)
+
+    foo <- data.frame(vDate=as.Date('1960-1-1') + -1:1,
+                      vChron=chron(dates.='1/1/1960', times.='00:00:00') + -1:1,
+                      vPOSIXct=as.POSIXct('1960-1-1 00:00', tz='GMT') + -1:1 / 1000,
+                      vYearqtr=yearqtr(1960) + -1:1 / 4,
+                      vYearmon=yearmon(1960) + -1:1 / 12)
+
+    write.stataXml(foo, tmpfn <- tempfile())
+    bar <- read.stataXml(tmpfn)
+
+    ## Check that the formats are correct
+    checkEquals(attr(bar, 'formats'),
+                paste('%t', c('d', 'd', 'c', 'q','m'), sep=''))
+    ## Check that the variables are numeric
+    checkEquals(attr(bar, 'type'), rep('double', ncol(bar)))
+
+    ## Unit tests for the actual time conversions are handled by the unit tests
+    ## for asStataTime()
+
+}
+
+test.write.stataXml.missings <- function() {
+    foo <- data.frame(vNum=as.numeric(c(0, NA)),
+                      vInt=as.integer(c(0, NA)),
+                      vLogical=as.logical(c(FALSE, NA)),
+                      ## How I handle NAs in strings
+                      ## convert NA -> ''. This is what Stata considers missing.
+                      vChar=as.character(c('a', NA)),
+                      stringsAsFactors=FALSE)
+    write.stataXml(foo, tmpfn <- tempfile())
+    bar <- read.stataXml(tmpfn)
+
+    ## Test that values are equal
+    for (i in c(1,2,4)) {
+        checkEquals(foo[[i]], bar[[i]])
+    }
+    checkEquals(foo[['vLogical']], as.logical(bar[['vLogical']]))
+
+    ## FIXME : missing values not handled correctly
+
+}

@@ -1,5 +1,5 @@
 library(XML)
-## CONSTANTS
+## CONSTANT
 
 ## Classes that can be converted to Stata dates and times by asStataTime
 DATETIME.CLASSES <- c("Date", 'dates', 'times', 'POSIXlt', 'POSIXct',
@@ -60,11 +60,29 @@ stataVarLabel <- function(x) substr(x, 1, ST.LABELVAR)
 
 stataDataLabel <- function(x) substr(x, 1, ST.LABELDATA)
 
-stataStr <- function(x) substr(x, 1, ST.STR.MAX)
+stataStr <- function(x)  {
+    ## Replace NA with ''
+    x[ is.na(x) ] <- ''
+    ## Truncate to
+    if (max(nchar(x)) > ST.STR.MAX) {
+        substr(x, 1, ST.STR.MAX)
+    }
+    x
+}
 
 stataValLabelStr <- function(x) substr(x, 1, ST.LABELVALSTR)
 
 stataCharStr <- function(x) substr(x, 1, ST.CHAR)
+
+### Converts variables to printable strings
+### Variables are passed through this function in order to print '.' rather than NA
+stataVar2Str <- function(x) {
+    if (is.numeric(x) & is.na(x)) {
+        '.'
+    } else {
+        as.character(x)
+    }
+}
 
 stataTypeToRclass <- function(x) {
     stataTypeToRClasses <- list(byte="integer",
@@ -304,8 +322,7 @@ write.stataXml <- function(dataframe, file,
     }
 
     ## Truncate character variables at Stata max string length
-    strVars <- which(sapply(dataframe,
-                            function(x) is.character(x) & max(nchar(x)) > ST.STR.MAX))
+    strVars <- which(sapply(dataframe, function(x) is.character(x)))
     for (v in strVars) {
         dataframe[[v]] <- stataStr(dataframe[[v]])
     }
@@ -318,7 +335,8 @@ write.stataXml <- function(dataframe, file,
 
     ## Convert DateTime variables
     for (v in seq_along(dataframe)) {
-        if (class(dataframe[[v]]) %in% DATETIME.CLASSES) {
+        if (any(class(dataframe[[v]]) %in% DATETIME.CLASSES)) {
+            print(names(dataframe)[[v]])
             dataframe[[v]] <- asStataTime(dataframe[[v]])
         }
     }
@@ -390,9 +408,9 @@ write.stataXml <- function(dataframe, file,
                                      stop("cannot find a format for type", x)
                                  }
                              })
-        ## Overwrite defaults for datetime variables
+        ## Overwrite default formats for datetime variables
         fmtlist <- mapply(function(x, y) if (is.null(x)) y else x,
-                          sapply(dataframe, function(x) attr(x, 'stata.time')),
+                          sapply(dataframe, function(x) attr(x, 'stata.format')),
                           fmtlist)
         names(fmtlist) <- varlist
     }
@@ -490,10 +508,11 @@ write.stataXml <- function(dataframe, file,
             z$addTag('o', attrs=c("num"=i), close=FALSE)
         }
         for (j in seq_len(nvar)) {
+            xij <- stataVar2Str(dataframe[i, j])
             if (! verbose) {
-                z$addTag('v', dataframe[i, j])
+                z$addTag('v', xij)
             } else {
-                z$addTag('v', dataframe[i, j],  attrs=c("varname"=varlist[j]))
+                z$addTag('v', xij,  attrs=c("varname"=varlist[j]))
             }
         }
         z$closeTag()
@@ -503,7 +522,6 @@ write.stataXml <- function(dataframe, file,
     ## Value Labels
     z$addTag("value_labels", close=FALSE)
     nonNullLabels <- names(valueLabels)[ ! sapply(valueLabels, is.null) ]
-    browser()
     for (vallab in nonNullLabels) {
         browser()
         z$addTag("vallab", attrs=c('name'=vallab), close=FALSE)

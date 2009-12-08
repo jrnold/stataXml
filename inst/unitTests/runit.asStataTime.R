@@ -21,10 +21,10 @@ test(asStataTime) <- function() {
     ## POSIXt -> %td
     posxCt2 <- as.POSIXct(c('1959-12-31', '1960-1-1', '1960-1-2'), tz='GMT')
     posxLt2 <- as.POSIXlt(posxCt2)
-    checkEqualsNumeric(asStataTime(posxLt2, hasTc=FALSE), -1:1)
-    checkEquals(attr(asStataTime(posxLt2, hasTc=FALSE), 'stata.format'), '%td')
-    checkEqualsNumeric(asStataTime(posxCt2, hasTc=FALSE), -1:1)
-    checkEquals(attr(asStataTime(posxCt2, hasTc=FALSE), 'stata.format'), '%td')
+    checkEqualsNumeric(asStataTime(posxLt2, useTc=FALSE), -1:1)
+    checkEquals(attr(asStataTime(posxLt2, useTc=FALSE), 'stata.format'), '%td')
+    checkEqualsNumeric(asStataTime(posxCt2, useTc=FALSE), -1:1)
+    checkEquals(attr(asStataTime(posxCt2, useTc=FALSE), 'stata.format'), '%td')
 
     ## chron
     stChron <- asStataTime(chron('1/1/1960') + -1:1)
