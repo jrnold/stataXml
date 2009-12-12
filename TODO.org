@@ -1,6 +1,10 @@
 * TODO man pages
 * TODO fix empty xml tree warning.
-* TODO handle writing numeric missing values ("." instead of "NA")
-* TODO unit tests / tests for reading and writing. 
-** TODO date/times for write.stataXml
-** TODO missing values for write.stataXml
+* DONE handle writing numeric missing values ("." instead of "NA")
+* DONE unit tests / tests for reading and writing. 
+** DONE date/times for write.stataXml
+** DONE missing values for write.stataXml
+* TODO add ability to read from URLs like read.dta does.
+* TODO only write factors for variables with value labels if all values have labels. 
+
+This is how read.dta handles it.
