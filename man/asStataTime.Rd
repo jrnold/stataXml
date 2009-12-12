@@ -2,10 +2,12 @@
 \alias{asStataTime}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+  \title{Convert R date and time classes to  Stata numeric date/time values}
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Converts R date and time classes (chron, Date, POSIXt, yearmon,
+  yearqtr) to a numeric value corresponding
+  to the most similar Stata date/time format.
 }
 \usage{
 asStataTime(x, useTc = TRUE)
@@ -13,14 +15,24 @@ asStataTime(x, useTc = TRUE)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-%%     ~~Describe \code{x} here~~
-}
+    chron, Date, POSIXt, yearmon, or yearqtr object.
+  }
   \item{useTc}{
-%%     ~~Describe \code{useTc} here~~
-}
+    If TRUE, use the '\%tc' format for converting POSIXt objects.
+    Otherwise, use the '\%td' format for POSIXt object.
+    The '\%tc' format was introduced in Stata 10, so set this to
+    FALSE to ensure compatibility with earlier versions of Stata.
+  }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+  \tabular{}{
+    chron \tab \%td
+    Date \tab \%td
+    POSIXct \tab \%tc or \%td
+    POSIXlt \tab \%tc or \%td
+    yearmon \tab \%tm
+    yearqtr \tab \%tq
+  }
 }
 \value{
 %%  ~Describe the value returned
@@ -33,71 +45,16 @@ asStataTime(x, useTc = TRUE)
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Jeffrey Arnold
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{fromStataTime}}, \code{\link{Date}}, \code{\link{POSIXt}},
+  \code{\link{yearmon}}, \code{\link{yearqtr}}
 }
+
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function(x, useTc=TRUE) {
-    ## TODO: handle packages tis, ts, and timeDate
-
-    if ( any(c(is(x, "Date"), is(x, 'dates'), is(x, 'times') ))) {
-        ## Date class in base
-        ## dates, times classes from chron
-        y <- as.numeric(x) - as.numeric(STATA.ORIGIN)
-        attr(y, 'stata.format') <- '\%td'
-    } else if (any(c(is(x, "POSIXlt"), is(x, "POSIXct"), is(x, 'POSIXt')))) {
-        if (useTc) {
-            ## POSIXct is number of seconds since 1970
-            ## \%tc is number of miliseconds since 1960
-            ## R ignores leap seconds as per POSIX, so I will convert to \%tc and not \%tC
-            ## as.double unlike as as.POSIXct keeps the fractional seconds
-            y <- unclass(as.double(x))
-            ## I round to fix floating point errors
-            y <- round((y - as.numeric(STATA.ORIGIN) * 86400) * 1000)
-            attr(y, 'stata.format') <- '\%tc'
-        } else {
-            ## If an older version of stata that doesn't support \%tc (version < 10)
-            ## Then convert to \%td (dates)
-            y <- as.numeric(as.Date(x)) - as.numeric(STATA.ORIGIN)
-            attr(y, 'stata.format') <- '\%td'
-        }
-    } else if (is(x, 'yearqtr')) {
-        ## yearqtr from zoo
-        ## time is represented year + fractional quarters
-        yStata <- as.POSIXlt(STATA.ORIGIN)$year + 1900
-        y <- (unclass(x) - yStata) * 4
-        attr(y, 'stata.format') <- '\%tq'
-    } else if (is(x, 'yearmon')) {
-        ## yearqtr from zoo
-        ## time is represented year + fractional quarters
-        yStata <- as.POSIXlt(STATA.ORIGIN)$year + 1900
-        y <- (unclass(x) - yStata) * 12
-        attr(y, 'stata.format') <- '\%tm'
-    } else {
-        ## I don't know what to do with other stuff.
-        ## option 1. Treat as dates.
-        ## option 2, use \%tg
-        y <- as.numeric(x)
-        attr(y, 'stata.format') <- '\%tg'
-    }
-    ##attr(y, 'class') <- 'stataTime'
-    y
-  }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+\keyword{chron}
+\keyword{manip}
