@@ -1,8 +1,8 @@
 \name{asStataTime}
 \alias{asStataTime}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
-  \title{Convert R date and time classes to  Stata numeric date/time values}
+  \title{Convert R date-time classes to Stata date-times}
 }
 \description{
   Converts R date and time classes (chron, Date, POSIXt, yearmon,
@@ -12,7 +12,7 @@
 \usage{
 asStataTime(x, useTc = TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{x}{
     chron, Date, POSIXt, yearmon, or yearqtr object.
@@ -25,7 +25,14 @@ asStataTime(x, useTc = TRUE)
   }
 }
 \details{
-  \tabular{}{
+
+  Stata stores date-time variables as a number of time units since 1960-1-1.
+  The number of units depends on the format: milliseconds for '\%tc',
+  days for '\%td', months for '\%tm', quarters for '\%tq', half-years
+  for '\%th'.  \bold{asStataTime} converts to following R data-time
+  classes to their most similar Stata date-time format
+
+  \tabular{ll}{
     chron \tab \%td
     Date \tab \%td
     POSIXct \tab \%tc or \%td
@@ -33,17 +40,21 @@ asStataTime(x, useTc = TRUE)
     yearmon \tab \%tm
     yearqtr \tab \%tq
   }
+
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  numeric vector. The vector has a single attribute \bold{stata.format}:
+  a character string with the Stat format.
 }
+
 \references{
-%% ~put references to the literature/web site here ~
+
+  For details of how Stata represents dates and times, see Stata help
+  for \bold{dates_and_times}, online at
+  \url{http://www.stata.com/help.cgi?dates_and_times}.
+  
 }
+
 \author{
 Jeffrey Arnold
 }

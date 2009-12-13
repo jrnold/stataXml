@@ -29,6 +29,11 @@ convert.underscore = FALSE, missing.type = TRUE)
 }
 
 \details{
+  The Stata XML format was introduced in Stata 9 as an alternative to
+  the binary .dta format to store datasets. This format can be written
+  by the Stata command \bold{xmlsave, doctype(dta)}, and read by the
+  Stata command \bold{xmluse}.  A file in Stata xml format contains the same
+  information contained in the Stata binary .dta files.
 
   The variables in the Stata data set become the columns of the
   data frame.  Missing values are correctly handled.  The data label,
@@ -93,7 +98,7 @@ convert.underscore = FALSE, missing.type = TRUE)
 }
 
 \references{
-  Stata help for \bold{xmlsave}. Online at
+  Stata help for \bold{xml}. Online at
   \url{http://www.stata.com/help.cgi?xmlsave}.
   The XML format used by stata has all the components of the binary
   Stata data format described in \url{http://www.stata.com/help.cgi?dta}.
@@ -104,7 +109,7 @@ convert.underscore = FALSE, missing.type = TRUE)
 }
 
 \seealso{
-  \code{\link{read.stataXml}}, \code{\link{fromStataDate}}, \code{\link{write.dta}}, \code{\link{read.dta}}
+  \code{\link{write.stataXml}}, \code{\link{fromStataDate}}, \code{\link{write.dta}}, \code{\link{read.dta}}
 }
 \examples{
 

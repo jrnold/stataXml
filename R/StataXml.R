@@ -542,11 +542,12 @@ STATA.ORIGIN.Y <- 1960
 
 fromStataTime <- function(x, fmt, tz='') {
 
-    ## convert.times <- list(tc = "POSIXct",
-    ##                       tC = "POSIXct",
-    ##                       td = "Date",
-    ##                       tm = "Date",
-    ##                       tq = "Date"),
+    fmt <- fmt[1]
+    if ( !(grepl('%t[cCdwmqhyg]', fmt)))  {
+        stop("fmt is not a Stata format")
+    } else {
+        fmt <- substr(fmt, 2, 3)
+    }
 
     if (fmt %in% c("tc", "tC")) {
         ## posixlt uses seconds
@@ -600,7 +601,7 @@ fromStataTime <- function(x, fmt, tz='') {
         dend <- as.Date(paste(yy + (half == 2),
                               6 * ((half %% 2) + 1) - 5, 1, sep='-'))
         ret <- dstart + frac * as.numeric(difftime(dend, dstart))
-    } else if (fmt == "tg") {
+    } else if (fmt %in% c("tg", "ty")) {
         ## %tg is a generic time format, one not specifically associated with dates.
         ## Since there is nothing for me to do, I just return the number.
         ret <- x
