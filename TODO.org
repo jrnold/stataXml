@@ -8,3 +8,16 @@
 * TODO only write factors for variables with value labels if all values have labels. 
 
 This is how read.dta handles it.
+* TODO handling very large floats and double values that may be mistaken for missings.
+
+See note in write.dta
+
+* TODO check that time-zones are handled consistenly in (from|as)StataTime.
+* TODO Support tis, ts, and timeDate in asStataTime()
+* TODO abstract xml writing to a write Stata data frunction.
+* TODO write a function equivalent to write.foreign()
+* TODO Incorporate binary read write into this package
+
+This will create an equivalent to (read|write).dta with improved handling of dates, formats,
+labels, characteristics, etc. It will also be nice because it will separate the data conversion
+from the writing to a specific Stata format.

@@ -575,7 +575,6 @@ fromStataTime <- function(x, fmt, tz='') {
         dend <- as.Date(paste( yy + (wk==52), 1, 1, sep='-')) + (wk %% 52)  * 7
         ret <- dstart + frac * as.numeric(difftime(dend, dstart))
     } else if (fmt == "tm") {
-        ## TODO
         yy <- floor(x / 12) + STATA.ORIGIN.Y
         mm <- floor(x %% 12) + 1
         frac <- (x %% 12) %% 1
