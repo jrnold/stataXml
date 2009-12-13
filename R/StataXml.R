@@ -542,7 +542,8 @@ STATA.ORIGIN.Y <- 1960
 
 fromStataTime <- function(x, fmt, tz='') {
 
-    fmt <- fmt[1]
+    ## keep only first element and part to determine time type
+    fmt <- substr(fmt[1], 1, 3)
     if ( !(grepl('%t[cCdwmqhyg]', fmt)))  {
         stop("fmt is not a Stata format")
     } else {
