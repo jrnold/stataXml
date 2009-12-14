@@ -1,1 +1,1 @@
-export( asStataTime, fromStataTime, read.stataXml, write.StataXml)
+export( asStataTime, fromStataTime, read.stataXml, write.stataXml)
