@@ -1,9 +1,6 @@
 \name{asStataTime}
 \alias{asStataTime}
-
-\title{
-  \title{Convert R date-time classes to Stata date-times}
-}
+\title{Convert R date-time classes to Stata date-times}
 \description{
   Converts R date and time classes (chron, Date, POSIXt, yearmon,
   yearqtr) to a numeric value corresponding
@@ -33,12 +30,12 @@ asStataTime(x, useTc = TRUE)
   classes to their most similar Stata date-time format
 
   \tabular{ll}{
-    chron \tab \%td
-    Date \tab \%td
-    POSIXct \tab \%tc or \%td
-    POSIXlt \tab \%tc or \%td
-    yearmon \tab \%tm
-    yearqtr \tab \%tq
+    chron \tab \%td \cr
+    Date \tab \%td \cr
+    POSIXct \tab \%tc or \%td \cr
+    POSIXlt \tab \%tc or \%td \cr
+    yearmon \tab \%tm \cr
+    yearqtr \tab \%tq 
   }
 
 }
@@ -65,6 +62,13 @@ Jeffrey Arnold
 }
 
 \examples{
+
+    ## Date
+    asStataTime(as.Date('1960-1-1') + -1:1)
+
+    ## POSIXct
+    asStataTime(as.POSIXct('1960-1-1 00:00:00') + -1:1)
+
 }
 
 \keyword{chron}

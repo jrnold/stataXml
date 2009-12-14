@@ -20,6 +20,9 @@ convert.underscore = FALSE, missing.type = TRUE)
   \item{convert.dates}{
     logical. Convert Stata dates to 'Date' or 'POSIXct' class? (see description)
   }
+  \item{convert.factors}{
+    logical. Use Stata value labels to create factors?  
+  }
   \item{convert.underscore}{
     logical. Convert '"_"' in Stata variable names to '"."' in R names?
   }
@@ -44,10 +47,10 @@ convert.underscore = FALSE, missing.type = TRUE)
   or \bold{POSIXct} classes using \code{\link{fromStataTime}}.
   Variables with Stata value labels are converted to factors.
 
-  % ‘Date’ class and variables with Stata value labels are converted
-  % to factors.  Ordinarily, ‘read.dta’ will not convert a variable to
+  % \bold{Date} class and variables with Stata value labels are converted
+  % to factors.  Ordinarily, \bold{read.dta} will not convert a variable to
   % a factor unless a label is present for every level.  Use
-  % ‘convert.factors = NA’ to override this.  In any case the value
+  % \bold{convert.factors = NA} to override this.  In any case the value
   % label and format information is stored as attributes on the
   % returned data frame.
   
@@ -59,7 +62,7 @@ convert.underscore = FALSE, missing.type = TRUE)
   The first element of this vector is the type of missing value
   corresponding to the first \bold{NA} in the variable, and so on.
   The vector is a factor with 27 levels: ".", ".a", ..., ".z".
-  This is attached as the ‘"missing"’ attribute of the
+  This is attached as the "missing" attribute of the
   returned value.
 
 }
@@ -78,22 +81,19 @@ convert.underscore = FALSE, missing.type = TRUE)
       \item{sort}{character. Variables by which the dataset was sorted.}
       \item{char}{list. Data and variable characteristics, including
 	notes. See \url{http://www.stata.com/help.cgi?char}.}
-      \item{label.table}{list. Stata value labels}.
+      \item{label.table}{list. Stata value labels.}
       \item{dta_type}{Always equal to "xml". This is used to distinguish
 	data frames returned by \bold{read.stataXml} from those returned by \bold{read.dta}.}
       \item{missing}{list with the types of missing values for each variable.}
     }
   
-  The data frame returned from \bold{read.stataXml} is slightly different from the
-  data frame returned by \bold{read.dta}. The major differences are,
-
-  \itemize{
-    \item{missing values are returned as factors, and in vectors of length equal
-      to the number of \bold{NA}'s in each variable.}
-    \item{variable characteristics and the sort list are returned.}
-    \item{all of Stata's date and time variables are converted to R date/time
-      classes, not just "%d" and "%td".}
-  }
+  The data frame returned from \bold{read.stataXml} is slightly
+  different from the data frame returned by \bold{read.dta}. The major
+  differences are: missing values are returned as factors, and in
+  vectors of length equal to the number of \bold{NA}'s in each variable;
+  variable characteristics and the sort list are returned; and all of
+  Stata's date and time variables are converted to R date/time classes,
+  not just "%d" and "%td".
 
 }
 
@@ -112,6 +112,10 @@ convert.underscore = FALSE, missing.type = TRUE)
   \code{\link{write.stataXml}}, \code{\link{fromStataDate}}, \code{\link{write.dta}}, \code{\link{read.dta}}
 }
 \examples{
+
+data(swiss)
+write.stataXml(swiss, swissfile <- tempfile())
+read.stataXml(swissfile)
 
 }
 

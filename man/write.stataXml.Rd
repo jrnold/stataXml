@@ -63,7 +63,7 @@ write.stataXml(dataframe, file, convert.factors = "labels", sortlist = character
   into the Stata format using \link{asStataTime}.  
   
   There are four options for handling factors (the same as in
-  \bold{write.dta}.)  The default is to use Stata ‘value labels’ for
+  \bold{write.dta}.)  The default is to use Stata "value labels" for
   the factor levels. With \bold{convert.factors="string"}, the factor
   levels are written as strings.  With \bold{convert.factors="numeric"}
   the numeric values of the levels are written, or \bold{NA} if they
@@ -80,8 +80,8 @@ write.stataXml(dataframe, file, convert.factors = "labels", sortlist = character
   
   % Stata uses some large numerical values to represent missing
   % values.  This function does not currently check, and hence
-  % integers greater than ‘2147483620’ and doubles greater than
-  % ‘8.988e+307’ may be misinterpreted by Stata.
+  % integers greater than '2147483620' and doubles greater than
+  % '8.988e+307' may be misinterpreted by Stata.
 }
 \value{
   \bold{NULL}
@@ -100,6 +100,9 @@ write.stataXml(dataframe, file, convert.factors = "labels", sortlist = character
   \code{\link{read.stataXml}}, \code{\link{asStataDate}}, \code{\link{write.dta}}, \code{\link{read.dta}}
 }
 \examples{
+data(swiss)
+write.stataXml(swiss,swissfile <- tempfile())
+read.stataXml(swissfile)
 }
 
 \keyword{manip}

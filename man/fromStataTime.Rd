@@ -22,10 +22,11 @@ fromStataTime(x, fmt, tz = "")
   }
 }
 \details{
+  
   Stata stores dates-time variables as units of time since Jan 1, 1960.
-  The unit of time used depends on the Stata format.
-  One unit in variable formatted '\%tc', corresponds to 1 millisecond; in '\%td', one day; in '\%tm', one
-  month, etc.
+  The unit of time used depends on the Stata format.  One unit in
+  variable formatted '\%tc', corresponds to 1 millisecond; in '\%td',
+  one day; in '\%tm', one month, etc.
 
   This function is useful for converting date-time variables imported from a Stata
   dataset, such as from read.dta or read.stataXml, into the correct R
@@ -65,17 +66,22 @@ Jeffrey Arnold
 }
 \examples{
 ## clock to POSIXt
-fromStataTime(-1:1, 'tc')
+fromStataTime(-1:1, '\%tc')
+
 ## dates to Date
-fromStataTime(-1:1, 'td')
+fromStataTime(-1:1, '\%td')
+
 ## months 
-fromStataTime(-1:1, 'tm')
+fromStataTime(-1:1, '\%tm')
+
 ## quarters
-fromStataTime(-1:1, 'tq')
+fromStataTime(-1:1, '\%tq')
+
 ## half-years
-fromStataTime(-1:1, 'th')
+fromStataTime(-1:1, '\%th')
+
 ## years
-fromStataTime(1959:1960, 'ty')
+fromStataTime(1959:1960, '\%ty')
 }
 \keyword{chron}
 \keyword{manip}

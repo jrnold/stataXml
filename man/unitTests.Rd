@@ -14,7 +14,7 @@ in package sources).
 library(svUnit)
 clearLog()
 
-runTest(svSuite("package:stataXml")
+runTest(svSuite("package:stataXml"))
 
 errorLog()
 }

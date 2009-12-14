@@ -4,8 +4,8 @@ DATETIME.CLASSES <- c("Date", 'dates', 'times', 'POSIXlt', 'POSIXct',
 
 
 ## Origin date for Stata Date Variables
-ST.EPOCH <- as.Date("1960-01-01")
-ST.EPOCH.Y <- 1960
+STATA.ORIGIN <- '1960-01-01'
+STATA.ORIGIN.Y <- 1960
 
 ## Length of variable label
 ST.LABELVAR <- 80L
@@ -109,7 +109,7 @@ stataTypeToRclass <- function(x) {
 
 read.stataXml <- function(file,
                           convert.dates=TRUE,
-                          convert.factors=TRUE,
+                         convert.factors=TRUE,
                           convert.underscore=FALSE,
                           missing.type=TRUE)
 {
@@ -221,7 +221,7 @@ read.stataXml <- function(file,
     ## Dates
     if (convert.dates) {
         for (i in grep('^%t[cCdwmqh]', fmtlist)) {
-            fmt <- substr(fmtlist[i], 2, 3)
+            fmt <- substr(fmtlist[i], 1, 3)
             df[[i]] <- fromStataTime(df[[i]], fmt)
         }
     }
@@ -373,7 +373,7 @@ write.stataXml <- function(dataframe, file,
                 ## strings should already be truncated to correct size
                 ret <- paste("str", max(nchar(x)), sep="")
             } else {
-                stop(vartype, "not supported.")
+                stop(x, "not supported.")
             }
             ret
         })
@@ -520,7 +520,6 @@ write.stataXml <- function(dataframe, file,
     z$addTag("value_labels", close=FALSE)
     nonNullLabels <- names(valueLabels)[ ! sapply(valueLabels, is.null) ]
     for (vallab in nonNullLabels) {
-        browser()
         z$addTag("vallab", attrs=c('name'=vallab), close=FALSE)
         for ( i  in seq_along(valueLabels[[vallab]])) {
             z$addTag('label', valueLabels[[vallab]][i],  attrs=c('value'=i))
@@ -537,8 +536,6 @@ write.stataXml <- function(dataframe, file,
 
 }
 
-STATA.ORIGIN <- '1960-01-01'
-STATA.ORIGIN.Y <- 1960
 
 fromStataTime <- function(x, fmt, tz='') {
 

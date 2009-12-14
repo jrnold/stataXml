@@ -41,12 +41,12 @@ test(write.stataXml) <- function() {
     checkEquals(attr(bar, 'datalabel'), datalabel)
     checkTrue( all( attr(bar, 'formats') != ''))
     checkEquals(attr(bar, 'types'),
-                c('byte', 'double', 'factor', 'byte', 'byte',
+                c('byte', 'double', 'str1', 'byte', 'byte', 'byte',
                   'int', 'int', 'long', 'long'))
 
     valLabels <- rep('', ncol(bar))
     valLabels[ 4 ] <- 'vfactor'
-    checkEquals(attr(bytes, 'val.labels'), valLabels)
+    checkEquals(attr(bar, 'val.labels'), valLabels)
     checkEquals(attr(bar, 'var.labels'), variableLabels)
     checkEquals(attr(bar, 'sort'), sortlist)
     checkEquals(attr(bar, 'char'), char)
@@ -159,10 +159,11 @@ test.write.stataXml.missings <- function() {
     bar <- read.stataXml(tmpfn)
 
     ## Test that values are equal
-    for (i in c(1,2,4)) {
+    for (i in c(1,2)) {
         checkEquals(foo[[i]], bar[[i]])
     }
     checkEquals(foo[['vLogical']], as.logical(bar[['vLogical']]))
+    checkEquals(c("a", ""), bar[['vChar']])
 
     ## FIXME : missing values not handled correctly
 
